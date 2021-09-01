@@ -7,7 +7,7 @@
       right: 0px;
       top: 0px;
       font-family: $mono-font;
-//      font-size: $font-size-small;
+      font-size: $font-size-small;
       content: attr(data-lang);
       padding: 0 5px;
       color: lighten($text-gray-light, 30%);
@@ -62,7 +62,7 @@
   // improved
   code,
   tt {
-//    font-size: $font-size-small;
+    font-size: $font-size-small;
     border: $border;
     color: $theme-code-inline;
     background-color: $theme-code-inline-background;
@@ -76,8 +76,7 @@
 
   .highlight pre,
   pre {
-//    font-size: $font-size-small;
-    color: #1abc9c;
+    font-size: $font-size-small;
     border: $border;
     background-color: $theme-code-background;
   }
