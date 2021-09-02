@@ -25,8 +25,8 @@ sort: 2
     
 ### 바인딩
 
-    - 런타임 시점에 바인딩 : 지연 바인딩(Lazy Binding) 또는 동적 바인딩(Dynamic Binding)  
-    - 컴파일 시점에 바인딩 : 초기 바인딩(Early Binding) 또는 정적 바인딩(Static Binding)
+    - 런타임 시점에 바인딩: 지연 바인딩(Lazy Binding) 또는 동적 바인딩(Dynamic Binding)  
+    - 컴파일 시점에 바인딩: 초기 바인딩(Early Binding) 또는 정적 바인딩(Static Binding)
     - 객체지향 프로그래밍에서는 지연 바인딩 메커니즘을 이용해 런타임 시점에 바인딩 함
 
 ## 상속
