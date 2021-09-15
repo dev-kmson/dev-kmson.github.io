@@ -6,7 +6,7 @@ sort: 1
 
 ---
 
-## 빈
+## @Bean, @Configuration
 
 @Bean
 
@@ -68,7 +68,7 @@ public class AppConfig {
     
     - @Configuration으로 인해 바이트코드 조작이 일어나므로 해당 어노테이션 제거 시 싱글톤이 보장되지 않음
 
-## 컴포넌트 스캔
+## @Component, @ComponentScan
 
 @Component
 
