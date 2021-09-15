@@ -8,7 +8,7 @@ sort: 1
 
 ## 빈
 
-[@Bean]
+@ Bean
 
     - 메서드 레벨에 사용
 
@@ -16,7 +16,7 @@ sort: 1
 
     - 메서드가 반환하는 객체가 스프링 컨테이너의 빈으로 등록됨
 
-[@Configuration]  
+@ Configuration  
 
     - 클래스 레벨에 사용
 
@@ -70,7 +70,7 @@ public class AppConfig {
 
 ## 컴포넌트 스캔
 
-[@Component]
+@ Component
 
     - 클래스 레벨에 사용
 
@@ -79,7 +79,7 @@ public class AppConfig {
     - @Configuration과 @Bean을 이용하여 빈 객체와 의존 관계를 직접 주입한 것과 달리
       의존관계 주입을 해당 클래스 내에서 해결하여야 함
 
-[@ComponentScan]
+@ ComponentScan
 
     - 클래스 레벨에 사용
 
