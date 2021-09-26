@@ -107,6 +107,9 @@ public class AppConfig {
     - 메서드, 필드 레벨에 사용
     
     - 스프링 컨테이너가 해당 메서드의 인자 혹은 필드 변수에 인스턴스를 자동으로 주입
+
+        BeanPostProcessor 인터페이스를 구현한 빈 AutowiredAnnotationBeanPostProcessor가
+        초기화 콜백 라이프사이클 이전에 의존관계를 주입함
     
         Map 또는 List로 스프링 빈에 등록된 같은 타입의 구현체들을 전부 받아올 수도 있음
 
@@ -168,7 +171,7 @@ but found 2: fixDiscountPolicy,rateDiscountPolicy
         같은 타입의 구현체 여러개가 스프링 빈에 등록된 경우 해당 타입으로 의존관계 주입 시 
         NoUniqueBeanDefinitionException 오류가 발생함
 
-        의존관계의 우선 순위를 부여하여 해결 가능
+        의존관계의 우선 순위를 부여 또는 빈 지정하여 해결 가능(@Primary, @Qualifier, 변수명 빈이름과 매칭)
 
 ## 자동, 수동의 선택 기준
 
