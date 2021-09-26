@@ -20,7 +20,17 @@ sort: 2
 
 인터페이스 InitializingBean, DisposableBean
 
-    -
+    - 스프링 전용 인터페이스
+
+        스프링 전용 인터페이스로써 외부 라이브러리에 적용할 수 없음
+        
+    - 콜백 메서드
+        
+        InitializingBean -> afterPropertiesSet()
+        DisposableBean -> destroy()
+
+        초기화와 소멸 메서드의 이름을 변경할 수 없음
+    
 
 빈 초기화, 소멸 메서드 지정
 

@@ -171,7 +171,7 @@ but found 2: fixDiscountPolicy,rateDiscountPolicy
         같은 타입의 구현체 여러개가 스프링 빈에 등록된 경우 해당 타입으로 의존관계 주입 시 
         NoUniqueBeanDefinitionException 오류가 발생함
 
-        의존관계의 우선 순위를 부여 또는 빈 지정하여 해결 가능(@Primary, @Qualifier, 변수명 빈이름과 매칭)
+        의존관계의 우선 순위를 부여 또는 빈 지정하여 해결 가능(@Primary, @Qualifier, 변수명을 빈 이름과 매칭)
 
 ## 자동, 수동의 선택 기준
 
