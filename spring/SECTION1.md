@@ -33,7 +33,7 @@ sort: 1
         조작된 클래스로 인하여 @Bean이 붙은 메서드의 반환 객체가 스프링 컨테이너에 빈으로 
         존재하면 빈 반환, 존재하지 않으면 빈 등록
 
-~~~java
+```java
 
 
 @Configuration
@@ -55,7 +55,7 @@ public class AppConfig {
     }
     
 }
-~~~
+```
 
         @bean이 붙은 memberRepository메서드의 반환 객체 MemoryMemberRepository를 빈에 등록하는 과정 중에 1번,
         @bean이 붙은 memberService메서드의 반환 객체 MemberServiceImpl을 빈에 등록하는 과정 중에 1번,
@@ -118,7 +118,7 @@ public class AppConfig {
     
         Map 또는 List로 스프링 빈에 등록된 같은 타입의 구현체들을 전부 받아올 수도 있음
 
-~~~java
+```java
 
 public class DiscountService {
     private final Map<String, DiscountPolicy> policyMap;
@@ -129,7 +129,7 @@ public class DiscountService {
         this.policies = policies;
     }    
 }
-~~~
+```
 
         스프링 컨테이너가 DiscountPolicy 타입의 구현체들을 알아서 주입해줌
 
@@ -157,7 +157,7 @@ public class DiscountService {
 
     - 의존관계 우선 순위
 
-~~~java
+```java
 @Component
   public class FixDiscountPolicy implements DiscountPolicy {}
 
@@ -171,7 +171,7 @@ private DiscountPolicy discountPolicy;
 NoUniqueBeanDefinitionException: No qualifying bean of type
 'hello.core.discount.DiscountPolicy' available: expected single matching bean
 but found 2: fixDiscountPolicy,rateDiscountPolicy
-~~~
+```
 
         같은 타입의 구현체 여러개가 스프링 빈에 등록된 경우 해당 타입으로 의존관계 주입 시 
         NoUniqueBeanDefinitionException 오류가 발생함

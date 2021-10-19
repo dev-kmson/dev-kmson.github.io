@@ -8,7 +8,7 @@ sort: 3
 
 ## 빈 스코프 지정
 
-~~~java
+```java
 
 // @ComponentScan과 @Component를 이용한 자동 빈 등록에서의 빈 스코프 지정
 @Scope("prototype")
@@ -24,7 +24,7 @@ PrototypeBean helloBean() {
     return new helloBean();
 }
 
-~~~
+```
 
 ## 빈 스코프 종류
 
@@ -34,7 +34,7 @@ singleton
 
     - 스프링 컨테이너가 항상 같은 인스턴스의 스프링 빈을 반환함
 
-~~~java
+```java
 
 AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(SingletonBean.class);
 
@@ -50,9 +50,9 @@ assertThat(singletonBean1).isSameAs(singletonBean2);
 
 ac.close();
 
-~~~
+```
 
-~~~java
+```java
 
 17:57:54.169 [main] DEBUG org.springframework.context.annotation.AnnotationConfigApplicationContext - Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@318ba8c8
 17:57:54.184 [main] DEBUG org.springframework.beans.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.annotation.internalConfigurationAnnotationProcessor'
@@ -67,12 +67,9 @@ singletonBean1 = com.devson.springtest.scope.SingletonTest$SingletonBean@644baf4
 singletonBean2 = com.devson.springtest.scope.SingletonTest$SingletonBean@644baf4a
 SingletonBean.destroy
 
-~~~
+```
 
-    빈 등록 시 빈을 초기화하는 과정에서 초기화 콜백 메서드가 호출되었고 이후 스프링 컨테이너에서 관리되어
-    빈을 요청할 때마다 스프링 컨테이너가 같은 인스턴스를 반환했음을 알 수 있음
-
-    SingletonBean 클래스의 초기화 콜백 메서드가 "after SingletonBean initialization" 문구 출력 이후에 호출 됨
+    SingletonBean 클래스의 초기화 콜백 메서드가 "after SingletonBean initialization" 문구 출력 이전에 호출 됨
     이는 곧 스프링 컨테이너가 빈 등록 시 빈을 초기화한 이후에 빈에 대한 요청이 있을 때마다 해당 빈의 인스턴스를 반환했음을 알 수 있음
 
 prototype
@@ -83,7 +80,7 @@ prototype
 
     - @PreDestroy와 같은 종료 콜백 메서드가 호출되지 않음
 
-~~~java
+```java
 
 AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(PrototypeBean.class);
 
@@ -100,9 +97,9 @@ Assertions.assertThat(prototypeBean1).isNotSameAs(prototypeBean2);
 
 ac.close();
 
-~~~
+```
 
-~~~java
+```java
 
 17:48:03.127 [main] DEBUG org.springframework.context.annotation.AnnotationConfigApplicationContext - Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@318ba8c8
 17:48:03.140 [main] DEBUG org.springframework.beans.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.annotation.internalConfigurationAnnotationProcessor'
@@ -117,7 +114,7 @@ PrototypeBean.init
 prototypeBean1 = com.devson.springtest.scope.PrototypeTest$PrototypeBean@644baf4a
 prototypeBean2 = com.devson.springtest.scope.PrototypeTest$PrototypeBean@7526515b
 
-~~~
+```
 
     PrototypeBean 클래스의 초기화 콜백 메서드가 "find prototypeBean1", "find prototypeBean2" 문구 출력 이후에 각각 호출 됨
     이는 곧 스프링 컨테이너가 빈 등록 시 빈을 초기화하지 않고 빈에 대한 요청이 있을 때마다 해당 빈을 초기화하여 새로운 인스턴스를 반환했음을 알 수 있음
@@ -126,4 +123,110 @@ prototypeBean2 = com.devson.springtest.scope.PrototypeTest$PrototypeBean@7526515
     ** 프로토타입 스코프를 가지는 빈은 빈 등록 시 초기화 되지 않고 빈에 대해 요청 시마다 생성 및 초기화 됨
     ** 프로토타입 스코프를 가지는 빈은 스프링 컨테이너에서 관리되지 않기 때문에 종료 콜백 메서드가 호출되지 않음
         
-## 싱글톤과 프로토타입
+## 프로토타입의 문제점
+
+    프로토타입 스코프를 가지는 빈은 스프링 컨테이너에 요청이 올 때마다 새로 인스턴스를 생성하여 반환함
+    그러나 싱글톤 스코프로 관리되는 빈에서 프로토타입 스코프를 가진 빈을 의존관계로 주입 받는 경우에
+    싱글톤 스코프를 가진 빈이 해당 인스턴스를 계속 참조하게 되므로 마치 프로토타입이 아닌 싱글톤으로 관리되는 것처럼 보이게 됨
+
+```java
+
+AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(SingletonBean.class, PrototypeBean.class);
+
+SingletonBean singletonBean1 = ac.getBean(SingletonBean.class);
+int count1 = singletonBean1.logic();
+assertThat(count1).isEqualTo(1);
+
+SingletonBean singletonBean2 = ac.getBean(SingletonBean.class);
+int count2 = singletonBean2.logic();
+assertThat(count2).isEqualTo(2);
+
+@Scope("singleton")
+static class SingletonBean {
+
+    private final PrototypeBean prototypeBean;
+
+    public SingletonBean(PrototypeBean prototypeBean) {
+        this.prototypeBean = prototypeBean;
+    }
+
+    public int logic() {
+        prototypeBean.addCount();
+        return prototypeBean.getCount();
+    }
+}
+
+```
+
+    싱글톤 스코프를 가진 빈의 singletonBean1과 singletonBean2는 모두 같은 인스턴스이므로 
+    SingletonBean의 멤버 변수인 prototypeBean 또한 같은 인스턴스를 참조함
+    따라서, PrototypeBean의 멤버 변수인 count를 증가시키면 같은 인스턴스를 참조하므로 값이 누적됨
+
+    위의 문제를 해결하기 위해 스프링 컨테이너를 통해 필요한 의존관계를 주입받지 않고
+    스프링 컨테이너를 통해 필요한 의존관계를 찾는 DL 기능이 필요함
+
+## Provider
+
+ObjectProvider
+
+    - DL 기능을 이용하여 지정한 빈을 스프링 컨테이너에서 대신 찾아주는 역할을 함
+
+        * DI : Dependency Injection, 의존관계 주입
+        * DL : Dependency Lookup, 의존관계 조회(탐색)
+
+    실제 필요로 하는 빈을 직접 의존관계를 통해 주입받지 않고 ObjectProvider를 주입받으며
+    이후에 실제 필요로 하는 빈을 ObjectProvider를 통하여 스프링컨테이너에서 찾은 후에
+    해당 빈을 생성 및 초기화하여 반환받음
+
+    과거에는 ObjectFactory를 사용하였으나 현재는 여러 편의 기능이 추가된 ObjectProvider를 사용
+
+```java
+
+AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(SingletonBean.class, PrototypeBean.class);
+
+SingletonBean singletonBean1 = ac.getBean(SingletonBean.class);
+int count1 = singletonBean1.logic();
+assertThat(count1).isEqualTo(1);
+
+SingletonBean singletonBean2 = ac.getBean(SingletonBean.class);
+int count2 = singletonBean2.logic();
+assertThat(count2).isEqualTo(1);
+
+@Scope("singleton")
+static class SingletonBean {
+
+    private final ObjectProvider<PrototypeBean> prototypeBeanProvider;
+
+    public SingletonBean(ObjectProvider<PrototypeBean> prototypeBeanProvider) {
+        this.prototypeBeanProvider = prototypeBeanProvider;
+    }
+
+    public int logic() {
+        PrototypeBean prototypeBean = prototypeBeanProvider.getObject();
+        prototypeBean.addCount();
+        return prototypeBean.getCount();
+    }
+}
+
+```
+
+```java
+
+PrototypeBean.init com.devson.springtest.scope.SingletonWithPrototypeTest1$PrototypeBean@710c2b53
+PrototypeBean.init com.devson.springtest.scope.SingletonWithPrototypeTest1$PrototypeBean@13526e59
+
+```
+
+    logic()가 호출되어 prototypeBean이 필요할 때 prototypeBeanProvider.getObject()를 호출하여
+    스프링 컨테이너에서 빈 prototypeBean을 생성 및 초기화하여 반환받음 
+    
+    싱글톤 스코프를 가진 빈 SingletonBean이 등록될 때 필요로하는 의존관계 PrototypeBean을 주입 받으면
+    프토토타입 스코프임에도 불구하고 항상 같은 인스턴스를 참조하게 되어 count값이 누적되는 것을 방지할 수 없으나
+    SingletonBean이 등록될 때가 아닌 클라이언트가 SingletonBean의 특정 메서드를 사용할 때 ObjectProvider를 
+    이용하여 프로토타입 스코프를 가진 빈 PrototypeBean을 스프링 컨테이너가 찾아서 반환하게 하면 프토토타입 스코프이기 때문에
+    매번 새로 생성된 인스턴스가 반환되므로 count값이 누적되는 것을 방지할 수 있음
+    
+    인스턴스 출력 결과를 보면 생성된 프로토타입 스코프를 가진 PrototypeBean 인스턴스들이 서로 다른 인스턴스이고
+    테스트 결과 실제 count의 값이 누적되지 않았음을 확인할 수 있음
+
+
