@@ -291,3 +291,140 @@ PrototypeBean.init com.devson.springtest.scope.SingletonWithPrototypeTest1$Proto
     스프링이 아닌 다른 컨테이너에서 사용할 수 있어야 한다면 자바 표준 Provider를 이용
 
 ### request    
+
+    - HTTP 요청 하나가 들어오고 나갈 때까지 유지되는 스코프
+
+    - 각각의 HTTP 요청마다 별도의 빈 인스턴스가 생성되고 관리됨
+
+```java
+
+package com.devson.springtest.common;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import java.util.UUID;
+
+@Component
+@Scope("request")
+public class MyLogger {
+
+    private String uuid;
+    private String requestURL;
+
+    public void setRequestURL(String requestURL) {
+        this.requestURL = requestURL;
+    }
+
+    public void log(String message) {
+        System.out.println("[" + uuid + "][" + requestURL + "] " + message);
+    }
+
+    @PostConstruct
+    public void init() {
+        uuid = UUID.randomUUID().toString();
+        System.out.println("[" + uuid + "] request scope bean create: " + this);
+    }
+
+    @PreDestroy
+    public void close() {
+        System.out.println("[" + uuid + "] request scope bean close: " + this);
+    }
+}
+
+```
+
+```java
+
+package com.devson.springtest.web;
+
+import com.devson.springtest.common.MyLogger;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
+
+@Controller
+@RequiredArgsConstructor
+public class LogDemoController {
+
+    private final LogDemoService logDemoService;
+    private final ObjectProvider<MyLogger> myLoggerProvider;
+
+    @RequestMapping("log-demo")
+    @ResponseBody
+    public String logDemo(HttpServletRequest request) {
+        String requestURL = request.getRequestURL().toString();
+        MyLogger myLogger = myLoggerProvider.getObject();
+        myLogger.setRequestURL(requestURL);
+
+        myLogger.log("controller test");
+        logDemoService.logic("testId");
+        return "OK";
+    }
+}
+
+```
+
+```java
+
+package com.devson.springtest.web;
+
+import com.devson.springtest.common.MyLogger;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class LogDemoService {
+
+    private final ObjectProvider<MyLogger> myLoggerProvider;
+
+    public void logic(String id) {
+        MyLogger myLogger = myLoggerProvider.getObject();
+        myLogger.log("service id = " + id);
+    }
+}
+
+```
+
+```text
+
+[281ba17a-73b7-49df-9874-838a749ab62d] request scope bean create: com.devson.springtest.common.MyLogger@63952645
+Controller Bean myLogger = com.devson.springtest.common.MyLogger@63952645
+[281ba17a-73b7-49df-9874-838a749ab62d][http://localhost:8080/log-demo] controller test
+Service Bean myLogger = com.devson.springtest.common.MyLogger@63952645
+[281ba17a-73b7-49df-9874-838a749ab62d][http://localhost:8080/log-demo] service id = testId
+[281ba17a-73b7-49df-9874-838a749ab62d] request scope bean close: com.devson.springtest.common.MyLogger@63952645
+[acc479ca-635e-4db0-bd5d-f0b63c2673fc] request scope bean create: com.devson.springtest.common.MyLogger@2ee074d9
+Controller Bean myLogger = com.devson.springtest.common.MyLogger@2ee074d9
+[acc479ca-635e-4db0-bd5d-f0b63c2673fc][http://localhost:8080/log-demo] controller test
+Service Bean myLogger = com.devson.springtest.common.MyLogger@2ee074d9
+[acc479ca-635e-4db0-bd5d-f0b63c2673fc][http://localhost:8080/log-demo] service id = testId
+[acc479ca-635e-4db0-bd5d-f0b63c2673fc] request scope bean close: com.devson.springtest.common.MyLogger@2ee074d9
+
+```
+
+    request 스코프는 HTTP의 요청으로부터 반환까지 유지되므로 Controller의 log-demo URL 요청이 
+    return을 만나 반환되는 시점에 스프링 컨테이너가 해당 빈을 관리 대상에서 제외함
+
+    request 스코프를 가지는 빈은 스프링 컨테이너가 동일한 HTTP에 의한 빈 요청임을 구분하여 빈을 반환해 줌
+    ObjectProvider를 통하여 LogDemoController와 LogDemoService에서 각각 개별적으로 빈 myLogger를 얻어왔음에도
+    같은 인스턴스를 반환했음을 보아 같은 HTTP 요청임을 구분하였음을 알 수 있음
+
+    Provider를 이용한 이유는 서버 구동 시 스프링 컨테이너가 빈에 대한 의존관계 주입 과정 중
+    LogDemoController와 LogDemoService 클래스에서 빈 myLogger에 대한 의존관계 주입이 필요하기 때문에 주입 시도 함
+    이 때, 빈 myLogger는 request 스코프를 가지므로 서버 구동 시점에서는 해당 빈을 찾을 수 없음
+    따라서, Provider를 이용하여 적절한 시점에 빈을 반환받도록 함
+
+### session
+
+### application
+
+### websocket
