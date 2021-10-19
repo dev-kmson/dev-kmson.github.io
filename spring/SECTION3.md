@@ -167,18 +167,20 @@ static class SingletonBean {
 
 ## Provider
 
-ObjectProvider
-
     - DL 기능을 이용하여 지정한 빈을 스프링 컨테이너에서 대신 찾아주는 역할을 함
 
         * DI : Dependency Injection, 의존관계 주입
         * DL : Dependency Lookup, 의존관계 조회(탐색)
 
-    실제 필요로 하는 빈을 직접 의존관계를 통해 주입받지 않고 ObjectProvider를 주입받으며
-    이후에 실제 필요로 하는 빈을 ObjectProvider를 통하여 스프링컨테이너에서 찾은 후에
-    해당 빈을 생성 및 초기화하여 반환받음
+ObjectProvider
+    
+    - 스프링에서 제공하는 Provider
 
-    과거에는 ObjectFactory를 사용하였으나 현재는 여러 편의 기능이 추가된 ObjectProvider를 사용
+    - getObject()를 통하여 필요로 하는 빈을 얻어옴
+    
+    - 과거에는 ObjectFactory를 사용하였으나 현재는 여러 편의 기능이 추가된 ObjectProvider를 사용
+
+    - 스프링에 의존적    
 
 ```java
 
@@ -229,4 +231,59 @@ PrototypeBean.init com.devson.springtest.scope.SingletonWithPrototypeTest1$Proto
     인스턴스 출력 결과를 보면 생성된 프로토타입 스코프를 가진 PrototypeBean 인스턴스들이 서로 다른 인스턴스이고
     테스트 결과 실제 count의 값이 누적되지 않았음을 확인할 수 있음
 
+JSR-330 Provider
 
+    - JSR-330 자바 표준인 javax.inject.Provider
+
+    - get()를 통하여 필요로 하는 빈을 얻어옴
+
+    - javax.inject:javax.inject:1 라이브러리를 추가해야 사용 가능
+
+    - 자바 표준이므로 스프링이 아닌 다른 컨테이너에서도 사용 가능
+
+```java
+
+AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(SingletonBean.class, PrototypeBean.class);
+
+SingletonBean singletonBean1 = ac.getBean(SingletonBean.class);
+int count1 = singletonBean1.logic();
+assertThat(count1).isEqualTo(1);
+
+SingletonBean singletonBean2 = ac.getBean(SingletonBean.class);
+int count2 = singletonBean2.logic();
+assertThat(count2).isEqualTo(1);
+
+@Scope("singleton")
+static class SingletonBean {
+
+    private final Provider<PrototypeBean> prototypeBeanProvider;
+
+    public SingletonBean(Provider<PrototypeBean> prototypeBeanProvider) {
+        this.prototypeBeanProvider = prototypeBeanProvider;
+    }
+
+    public int logic() {
+        PrototypeBean prototypeBean = prototypeBeanProvider.get();
+        prototypeBean.addCount();
+        return prototypeBean.getCount();
+    }
+}
+
+```
+
+```java
+
+PrototypeBean.init com.devson.springtest.scope.SingletonWithPrototypeTest1$PrototypeBean@221a3fa4 
+PrototypeBean.init com.devson.springtest.scope.SingletonWithPrototypeTest1$PrototypeBean@2438dcd
+
+```
+
+    스프링에서 제공하는 ObjectProvider 대신 자바 표준 javax.inject.Provider를 사용하며
+    자바 표준 javax.injectProvider에서 제공하는 get()를 호출한다는 점을 제외하고는 ObjectProvider를
+    사용한 테스트 케이스와 동일
+
+## Provider 선택 기준
+
+    ObjectProvider는 DL을 위한 많은 편의 기능을 제공하고 있으며 스프링 외에 별도의 라이브러리가 필요 없기 때문에 사용하기 편리함
+    일반적으로 ObjectProvider를 이용하되 ObjectProvider는 스프링에 의존적이므로 스프링이 아닌 다른 컨테이너에서 사용할 수 있어야 한다면 자바 표준 Provider를 이용
+    
