@@ -423,6 +423,25 @@ Service Bean myLogger = com.devson.springtest.common.MyLogger@2ee074d9
     이 때, 빈 myLogger는 request 스코프를 가지므로 서버 구동 시점에서는 해당 빈을 찾을 수 없음
     따라서, Provider를 이용하여 적절한 시점에 빈을 반환받도록 함
 
+#### proxyMode
+
+    - @Scope 옵션을 통한 의존관계 주입 지연
+
+        서버 구동 시 request 의존관계 주입 문제로 인하여 Provider를 이용하여 의존관계 주입 시점을 지연시켜 해결하였으나
+        Provider를 이용하지 않고 @Scope의 옵션을 통하여 해결할 수도 있음 
+
+```java
+
+@Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
+
+```
+
+    proxyMode 옵션 설정 시 빈이 등록되는 시점에 CGLIB 기술을 이용하여 실제 클래스를 상속 받는 
+    가짜 클래스를 만들어 빈으로 등록시키고 의존관계 주입 시점에서 빈으로 등록된 가짜 프록시 객체를 의존관계로 주입함
+    이 후, 실제 빈을 필요로 하는 요청이 오면 가짜 프록시 객체의 내부에서 실제 빈을 요청하는 위임 로직을 통하여 실제 빈을 반환함
+    
+    가짜 프록시 객체는 실제 request 스코프와는 별개로 싱글톤 스코프처럼 동작하며 실제 빈 요청 시 위임 로직을 통하여 실제 빈을 반환하는 역할만 함
+
 ### session
 
 ### application
