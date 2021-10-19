@@ -28,7 +28,7 @@ PrototypeBean helloBean() {
 
 ## 빈 스코프 종류
 
-singleton
+### singleton
 
     - 스프링 컨테이너가 자기 자신이 종료될 때까지 빈을 관리하는 가장 넓은 범위의 스코프(디폴트 스코프)
 
@@ -72,7 +72,7 @@ SingletonBean.destroy
     SingletonBean 클래스의 초기화 콜백 메서드가 "after SingletonBean initialization" 문구 출력 이전에 호출 됨
     이는 곧 스프링 컨테이너가 빈 등록 시 빈을 초기화한 이후에 빈에 대한 요청이 있을 때마다 해당 빈의 인스턴스를 반환했음을 알 수 있음
 
-prototype
+### prototype
 
     - 스프링 컨테이너가 빈의 생성과 의존관계 주입까지만 관여하고 더는 관리하지 않는 매우 짧은 범위의 스코프
 
@@ -123,7 +123,7 @@ prototypeBean2 = com.devson.springtest.scope.PrototypeTest$PrototypeBean@7526515
     ** 프로토타입 스코프를 가지는 빈은 빈 등록 시 초기화 되지 않고 빈에 대해 요청 시마다 생성 및 초기화 됨
     ** 프로토타입 스코프를 가지는 빈은 스프링 컨테이너에서 관리되지 않기 때문에 종료 콜백 메서드가 호출되지 않음
         
-## 프로토타입의 문제점
+#### 프로토타입의 문제점
 
     프로토타입 스코프를 가지는 빈은 스프링 컨테이너에 요청이 올 때마다 새로 인스턴스를 생성하여 반환함
     그러나 싱글톤 스코프로 관리되는 빈에서 프로토타입 스코프를 가진 빈을 의존관계로 주입 받는 경우에
@@ -165,7 +165,7 @@ static class SingletonBean {
     위의 문제를 해결하기 위해 스프링 컨테이너를 통해 필요한 의존관계를 주입받지 않고
     스프링 컨테이너를 통해 필요한 의존관계를 찾는 DL 기능이 필요함
 
-## Provider
+#### Provider
 
     - DL 기능을 이용하여 지정한 빈을 스프링 컨테이너에서 대신 찾아주는 역할을 함
 
@@ -282,11 +282,12 @@ PrototypeBean.init com.devson.springtest.scope.SingletonWithPrototypeTest1$Proto
     자바 표준 javax.injectProvider에서 제공하는 get()를 호출한다는 점을 제외하고는 ObjectProvider를
     사용한 테스트 케이스와 동일
 
-## Provider 선택 기준
+#### Provider 선택 기준
 
     ObjectProvider는 DL을 위한 많은 편의 기능을 제공하고 있으며 
     스프링 외에 별도의 라이브러리가 필요 없기 때문에 사용하기 편리함
 
     일반적으로 ObjectProvider를 이용하되 ObjectProvider는 스프링에 의존적이므로 
     스프링이 아닌 다른 컨테이너에서 사용할 수 있어야 한다면 자바 표준 Provider를 이용
-    
+
+### request    
