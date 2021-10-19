@@ -52,7 +52,7 @@ ac.close();
 
 ```
 
-```java
+```text
 
 17:57:54.169 [main] DEBUG org.springframework.context.annotation.AnnotationConfigApplicationContext - Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@318ba8c8
 17:57:54.184 [main] DEBUG org.springframework.beans.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.annotation.internalConfigurationAnnotationProcessor'
@@ -99,7 +99,7 @@ ac.close();
 
 ```
 
-```java
+```text
 
 17:48:03.127 [main] DEBUG org.springframework.context.annotation.AnnotationConfigApplicationContext - Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@318ba8c8
 17:48:03.140 [main] DEBUG org.springframework.beans.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.annotation.internalConfigurationAnnotationProcessor'
@@ -212,7 +212,7 @@ static class SingletonBean {
 
 ```
 
-```java
+```text
 
 PrototypeBean.init com.devson.springtest.scope.SingletonWithPrototypeTest1$PrototypeBean@710c2b53
 PrototypeBean.init com.devson.springtest.scope.SingletonWithPrototypeTest1$PrototypeBean@13526e59
@@ -271,7 +271,7 @@ static class SingletonBean {
 
 ```
 
-```java
+```text
 
 PrototypeBean.init com.devson.springtest.scope.SingletonWithPrototypeTest1$PrototypeBean@221a3fa4 
 PrototypeBean.init com.devson.springtest.scope.SingletonWithPrototypeTest1$PrototypeBean@2438dcd
