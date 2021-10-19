@@ -284,6 +284,9 @@ PrototypeBean.init com.devson.springtest.scope.SingletonWithPrototypeTest1$Proto
 
 ## Provider 선택 기준
 
-    ObjectProvider는 DL을 위한 많은 편의 기능을 제공하고 있으며 스프링 외에 별도의 라이브러리가 필요 없기 때문에 사용하기 편리함
-    일반적으로 ObjectProvider를 이용하되 ObjectProvider는 스프링에 의존적이므로 스프링이 아닌 다른 컨테이너에서 사용할 수 있어야 한다면 자바 표준 Provider를 이용
+    ObjectProvider는 DL을 위한 많은 편의 기능을 제공하고 있으며 
+    스프링 외에 별도의 라이브러리가 필요 없기 때문에 사용하기 편리함
+
+    일반적으로 ObjectProvider를 이용하되 ObjectProvider는 스프링에 의존적이므로 
+    스프링이 아닌 다른 컨테이너에서 사용할 수 있어야 한다면 자바 표준 Provider를 이용
     
