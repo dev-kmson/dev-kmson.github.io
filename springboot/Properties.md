@@ -2,7 +2,7 @@
 sort: 1
 ---
 
-# 스프링부트 Properties 설정
+# properties 설정
 
 ---
 
