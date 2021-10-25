@@ -1,5 +1,5 @@
 ---
-sort: 5
+sort: 1
 ---
 
 # 스프링부트 Properties 설정
