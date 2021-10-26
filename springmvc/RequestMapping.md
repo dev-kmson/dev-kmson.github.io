@@ -185,9 +185,28 @@ sort: 2
         log.info("mappingProduces");
         return "ok";
     }
+
+    /**
+     * 다양한 header 정보를 메서드의 매개변수로 받을 수 있음
+     */
+    @RequestMapping("/headers")
+    public String headers(HttpServletRequest request,
+                          HttpServletResponse response,
+                          HttpMethod httpMethod,
+                          Locale locale,
+                          @RequestHeader MultiValueMap<String, String> headerMap,
+                          @RequestHeader("host") String host,
+                          @CookieValue(value = "myCookie", required = false) String cookie
+    ) {
+        
+        return ok;
+        
+    }
     
 }
 
 ```
-
+매핑 관련 공식 메뉴얼  
+[요청 파라미터 목록 공식 메뉴얼](https://docs.spring.io/spring-framework/docs/current/reference/html/web.html#mvc-ann-arguments)  
+[응답 목록 공식 메뉴얼](https://docs.spring.io/spring-framework/docs/current/reference/html/web.html#mvc-ann-return-types)
 
