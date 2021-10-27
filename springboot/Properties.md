@@ -17,8 +17,8 @@ server.port = [port]
 # 예시) logging.level.org.apache.coyote.http11 = debug 
 logging.level.org.apache.coyote.http11 = [level]
 
-# 전체 로깅 레벨 지정(default -> info)
-# 예시) logging.level.root = info
+# 전체 로깅 레벨 지정
+# 예시) logging.level.root = info (default)
 logging.level.root = [level]
 
 # 특정 패키지 하위의 로깅 레벨 지정
@@ -34,5 +34,14 @@ spring.mvc.view.prefix = [path]
 # JSP 뷰 설정을 위한 파일 확장자
 # 예시) spring.mvc.view.suffix = .jsp
 spring.mvc.view.suffix = [ext]
+
+# thymeleaf 뷰 설정을 위한 파일 경로
+# 예시) spring.thymeleaf.prefix=classpath:/templates/ (default) 
+spring.thymeleaf.prefix = [path]
+
+# thymeleaf 뷰 설정을 위한 파일 확장자
+# 예시) spring.thymeleaf.suffix=.html (default) 
+spring.thymeleaf.suffix = [ext]
+
 
 ```

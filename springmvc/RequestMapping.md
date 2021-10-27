@@ -74,338 +74,504 @@ sort: 2
 
 ## 다양한 매핑 요청 방법
 
+    - get방식 쿼리파리미터, post방식 Form전송
+
 ```java
 
-// @RestController가 붙으면 반환 값으로 뷰를 찾지 않고 HTTP 메시지 바디에 바로 결과 값을 입력 함
-@RestController
-  public class MappingController {
+        // @RestController가 붙으면 반환 값으로 뷰를 찾지 않고 HTTP 메시지 바디에 바로 결과 값을 입력 함
+        @RestController
+          public class MappingController {
+        
+            /**
+             * 기본 요청
+             * 둘다 허용 /hello-basic, /hello-basic/
+             * HTTP 메서드 모두 허용 GET, HEAD, POST, PUT, PATCH, DELETE */
+            @RequestMapping("/hello-basic")
+            public String helloBasic() {
+                return "ok";
+            }
+        
+            /**
+             * method 특정 HTTP 메서드 요청만 허용
+             * GET, HEAD, POST, PUT, PATCH, DELETE
+             */
+            @RequestMapping(value = "/mapping-get-v1", method = RequestMethod.GET)
+            public String mappingGetV1() {
+                log.info("mappingGetV1");
+                return "ok";
+            }
+        
+        
+            /**
+             * PathVariable 사용
+             * 변수명이 같으면 생략 가능
+             * @PathVariable("userId") String userId -> @PathVariable userId */
+            @GetMapping("/mapping/{userId}")
+            public String mappingPath(@PathVariable("userId") String data) {
+                log.info("mappingPath userId={}", data);
+                return "ok";
+            }
+        
+            /**
+             * PathVariable 다중 사용
+             */
+            @GetMapping("/mapping/users/{userId}/orders/{orderId}")
+            public String mappingPath(@PathVariable String userId, @PathVariable Long
+                    orderId) {
+                log.info("mappingPath userId={}, orderId={}", userId, orderId);
+                return "ok";
+            }
+        
+            /**
+             * 파라미터로 추가 매핑 (특정 쿼리 파라미터의 조건 여부)
+             * params="mode",
+             * params="!mode"
+             * params="mode=debug"
+             * params="mode!=debug"
+             * params = {"mode=debug","data=good"}
+             */
+            @GetMapping(value = "/mapping-param", params = "mode=debug")
+            public String mappingParam() {
+                log.info("mappingParam");
+                return "ok";
+            }
 
-    private Logger log = LoggerFactory.getLogger(getClass());
+            /**
+             * @RequestParam 사용
+             * - 파라미터 이름으로 바인딩
+             */
+            @ResponseBody
+            @RequestMapping("/request-param-v2")
+            public String requestParamV2(
+                    @RequestParam("username") String memberName,
+                    @RequestParam("age") int memberAge) {
 
-    /**
-     * 기본 요청
-     * 둘다 허용 /hello-basic, /hello-basic/
-     * HTTP 메서드 모두 허용 GET, HEAD, POST, PUT, PATCH, DELETE */
-    @RequestMapping("/hello-basic")
-    public String helloBasic() {
-        log.info("helloBasic");
-        return "ok";
-    }
+                log.info("username={}, age={}", memberName, memberAge);
 
-    /**
-     * method 특정 HTTP 메서드 요청만 허용
-     * GET, HEAD, POST, PUT, PATCH, DELETE
-     */
-    @RequestMapping(value = "/mapping-get-v1", method = RequestMethod.GET)
-    public String mappingGetV1() {
-        log.info("mappingGetV1");
-        return "ok";
-    }
+                return "ok";
 
-    /**
-     * 편리한 축약 애노테이션 (코드보기) * @GetMapping
-     * @PostMapping
-     * @PutMapping
-     * @DeleteMapping
-     * @PatchMapping
-     */
-    @GetMapping(value = "/mapping-get-v2")
-    public String mappingGetV2() {
-        log.info("mapping-get-v2");
-        return "ok";
-    }
+            }
 
-    /**
-     * PathVariable 사용
-     * 변수명이 같으면 생략 가능
-     * @PathVariable("userId") String userId -> @PathVariable userId */
-    @GetMapping("/mapping/{userId}")
-    public String mappingPath(@PathVariable("userId") String data) {
-        log.info("mappingPath userId={}", data);
-        return "ok";
-    }
+            /**
+             * @RequestParam 사용
+             * HTTP 파라미터 이름이 변수 이름과 같으면 @RequestParam(name="xx") 생략 가능 
+             */
+            @ResponseBody
+            @RequestMapping("/request-param-v3")
+            public String requestParamV3(
+                    @RequestParam String username,
+                    @RequestParam int age) {
 
-    /**
-     * PathVariable 사용 다중
-     */
-    @GetMapping("/mapping/users/{userId}/orders/{orderId}")
-    public String mappingPath(@PathVariable String userId, @PathVariable Long
-            orderId) {
-        log.info("mappingPath userId={}, orderId={}", userId, orderId);
-        return "ok";
-    }
+                log.info("username={}, age={}", username, age);
 
-    /**
-     * 파라미터로 추가 매핑 (특정 쿼리 파라미터의 조건 여부)
-     * params="mode",
-     * params="!mode"
-     * params="mode=debug"
-     * params="mode!=debug"
-     * params = {"mode=debug","data=good"}
-     */
-    @GetMapping(value = "/mapping-param", params = "mode=debug")
-    public String mappingParam() {
-        log.info("mappingParam");
-        return "ok";
-    }
+                return "ok";
 
-    /**
-     *특정 헤더로 추가 매핑 (특정 헤더의 조건 여부)
-     * headers="mode",
-     * headers="!mode"
-     * headers="mode=debug"
-     * headers="mode!=debug"
-     */
-    @GetMapping(value = "/mapping-header", headers = "mode=debug")
-    public String mappingHeader() {
-        log.info("mappingHeader");
-        return "ok";
-    }
+            }
 
-    /**
-     * Content-Type 헤더 기반 추가 매핑 Media Type * consumes="application/json"
-     * consumes="!application/json"
-     * consumes="application/*"
-     * consumes="*\/*"
-     * MediaType.APPLICATION_JSON_VALUE
-     */
-    @PostMapping(value = "/mapping-consume", consumes = "application/json")
-    public String mappingConsumes() {
-        log.info("mappingConsumes");
-        return "ok";
-    }
+            /**
+             * @RequestParam 사용
+             * String, int 등의 단순 타입이면 @RequestParam 도 생략 가능 
+             * 명시적이지 않아 권장하지 않음
+             */
+            @ResponseBody
+            @RequestMapping("/request-param-v4")
+            public String requestParamV4(String username, int age) {
 
-    /**
-     * Accept 헤더 기반 Media Type * produces = "text/html"
-     * produces = "!text/html" * produces = "text/*"
-     * produces = "*\/*"
-     */
-    @PostMapping(value = "/mapping-produce", produces = "text/html")
-    public String mappingProduces() {
-        log.info("mappingProduces");
-        return "ok";
-    }
+                log.info("username={}, age={}", username, age);
 
-    /**
-     * 다양한 header 정보를 메서드의 매개변수로 받을 수 있음
-     */
-    @RequestMapping("/headers")
-    public String headers(HttpServletRequest request,
-                          HttpServletResponse response,
-                          HttpMethod httpMethod,
-                          Locale locale,
-                          @RequestHeader MultiValueMap<String, String> headerMap,
-                          @RequestHeader("host") String host,
-                          @CookieValue(value = "myCookie", required = false) String cookie
-    ) {
-        
-        return "ok";
-        
-    }
+                return "ok";
 
-    /**
-     * @RequestParam 사용
-     * - 파라미터 이름으로 바인딩
-     * @ResponseBody 추가
-     * - View 조회를 무시하고, HTTP message body에 직접 해당 내용 입력 
-     */
-    @ResponseBody
-    @RequestMapping("/request-param-v2")
-    public String requestParamV2(
-            @RequestParam("username") String memberName,
-            @RequestParam("age") int memberAge) {
-        
-        log.info("username={}, age={}", memberName, memberAge);
-        
-        return "ok";
-        
-    }
+            }
 
-    /**
-     * @RequestParam 사용
-     * HTTP 파라미터 이름이 변수 이름과 같으면 @RequestParam(name="xx") 생략 가능 
-     */
-    @ResponseBody
-    @RequestMapping("/request-param-v3")
-    public String requestParamV3(
-            @RequestParam String username,
-            @RequestParam int age) {
-        
-        log.info("username={}, age={}", username, age);
-        
-        return "ok";
-        
-    }
+            /**
+             * @RequestParam.required
+             * /request-param-required -> username이 없으므로 예외
+             * /request-param-required?username= -> 빈문자로 통과
+             * /request-param-required?username=xx -> age에 null 대입 불가하여 오류
+             * 필수값이 아닌 경우 자동으로 null을 대입 시킴
+             * int age -> null을 int에 입력하는 것은 불가능, 따라서 Integer 변경해야 함(또는 다음에 나오는 defaultValue 사용) 
+             */
+            @ResponseBody
+            @RequestMapping("/request-param-required")
+            public String requestParamRequired(
+                    @RequestParam(required = true) String username,
+                    @RequestParam(required = false) Integer age) {
 
-    /**
-     * @RequestParam 사용
-     * String, int 등의 단순 타입이면 @RequestParam 도 생략 가능 
-     */
-    @ResponseBody
-    @RequestMapping("/request-param-v4")
-    public String requestParamV4(String username, int age) {
-        
-        log.info("username={}, age={}", username, age);
-        
-        return "ok";
-        
-    }
-    
-    /**
-     * @RequestParam.required
-     * /request-param -> username이 없으므로 예외 *
-     * 주의!
-     * /request-param?username= -> 빈문자로 통과 *
-     * 주의!
-     * /request-param
-     * int age -> null을 int에 입력하는 것은 불가능, 따라서 Integer 변경해야 함(또는 다음에 나오는 defaultValue 사용) 
-     */
-    @ResponseBody
-    @RequestMapping("/request-param-required")
-    public String requestParamRequired(
-            @RequestParam(required = true) String username,
-            @RequestParam(required = false) Integer age) {
+                log.info("username={}, age={}", username, age);
 
-        log.info("username={}, age={}", username, age);
+                return "ok";
 
-        return "ok";
-        
-    }
+            }
 
-    /**
-     * @RequestParam
-     * - defaultValue 사용 *
-     * 참고: defaultValue는 빈 문자의 경우에도 적용 * /request-param?username=
-     */
-    @ResponseBody
-    @RequestMapping("/request-param-default")
-    public String requestParamDefault(
-            @RequestParam(required = true, defaultValue = "guest") String username,
-            @RequestParam(required = false, defaultValue = "-1") int age) {
-        
-        log.info("username={}, age={}", username, age);
-        
-        return "ok";
-        
-    }
+            /**
+             * @RequestParam
+             * - defaultValue 사용 *
+             * 참고: defaultValue는 빈 문자의 경우에도 적용 
+             * /request-param?username= -> username=guest
+             */
+            @ResponseBody
+            @RequestMapping("/request-param-default")
+            public String requestParamDefault(
+                    @RequestParam(required = true, defaultValue = "guest") String username,
+                    @RequestParam(required = false, defaultValue = "-1") int age) {
 
-    /**
-     * @RequestParam Map, MultiValueMap
-     * Map(key=value)
-     * MultiValueMap(key=[value1, value2, ...] ex) (key=userIds, value=[id1, id2])
-     */
-    @ResponseBody
-    @RequestMapping("/request-param-map")
-    public String requestParamMap(@RequestParam Map<String, Object> paramMap) {
-        
-        log.info("username={}, age={}", paramMap.get("username"), paramMap.get("age"));
-        
-        return "ok";
-        
-    }
-    /**
-     * @ModelAttribute 사용
-    * 참고: model.addAttribute(helloData) 코드도 함께 자동 적용됨
-    */
-    @ResponseBody
-    @RequestMapping("/model-attribute-v1")
-    public String modelAttributeV1(@ModelAttribute HelloData helloData) {
+                log.info("username={}, age={}", username, age);
 
-        log.info("username={}, age={}", helloData.getUsername(), helloData.getAge());
+                return "ok";
 
-        return "ok";
-        
-    }
+            }
 
-    /**
-     * @ModelAttribute 생략 가능
-     * String, int 같은 단순 타입 = @RequestParam
-     * argument resolver 로 지정해둔 타입 외 = @ModelAttribute 
-     * argument resolver -> 스프링에서 지정해둔 @ModelAttribute로 지정하지 않을 객체들 
-     */
-    @ResponseBody
-    @RequestMapping("/model-attribute-v2")
-    public String modelAttributeV2(HelloData helloData) {
-        
-        log.info("username={}, age={}", helloData.getUsername(), helloData.getAge());
-        
-        return "ok";
-        
-    }
+            /**
+             * @RequestParam Map, MultiValueMap
+             * Map(key=value)
+             * MultiValueMap(key=[value1, value2, ...] 
+             * ex) (key=userIds, value=[id1, id2])
+             */
+            @ResponseBody
+            @RequestMapping("/request-param-map")
+            public String requestParamMap(@RequestParam Map<String, Object> paramMap) {
 
-    /**
-     * HttpServlet을 이용하여 Http message body 가져옴
-     */
-    @PostMapping("/request-body-string-v1")
-    public void requestBodyString(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        
-        ServletInputStream inputStream = request.getInputStream();
-        String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
-        
-        log.info("messageBody={}", messageBody);
-        
-        response.getWriter().write("ok");
-        
-    }
+                log.info("username={}, age={}", paramMap.get("username"), paramMap.get("age"));
 
-    /**
-     * InputStream(Reader): HTTP 요청 메시지 바디의 내용을 직접 조회 
-     * OutputStream(Writer): HTTP 응답 메시지의 바디에 직접 결과 출력 
-     */
-    @PostMapping("/request-body-string-v2")
-    public void requestBodyStringV2(InputStream inputStream, Writer responseWriter) throws IOException {
-        
-        String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
-        
-        log.info("messageBody={}", messageBody);
-        
-        responseWriter.write("ok");
-        
-    }
+                return "ok";
 
-    /**
-     * HttpEntity: HTTP header, body 정보를 편리하게 조회
-     * - 메시지 바디 정보를 직접 조회(@RequestParam X, @ModelAttribute X)
-     * - HttpMessageConverter 사용 -> StringHttpMessageConverter 적용 
-     *
-     * 응답에서도 HttpEntity 사용 가능
-     * - 메시지 바디 정보 직접 반환(view 조회X)
-     * - HttpMessageConverter 사용 -> StringHttpMessageConverter 적용 
-     **/
-    @PostMapping("/request-body-string-v3")
-    public HttpEntity<String> requestBodyStringV3(HttpEntity<String> httpEntity) {
-        
-        String messageBody = httpEntity.getBody();
-        
-        log.info("messageBody={}", messageBody);
-        
-        return new HttpEntity<>("ok");
-        
-    }
+            }
+            /**
+             * @ModelAttribute 사용
+             * 요청 파라미터를 객체에 바인딩 함
+             * 참고: model.addAttribute(helloData) 코드도 함께 자동 적용됨
+             */
+            @ResponseBody
+            @RequestMapping("/model-attribute-v1")
+            public String modelAttributeV1(@ModelAttribute HelloData helloData) {
 
-    /**
-     * @RequestBody
-     * - 메시지 바디 정보를 직접 조회(@RequestParam X, @ModelAttribute X)
-     * - HttpMessageConverter 사용 -> StringHttpMessageConverter 적용 
-     *
-     * @ResponseBody
-     * - 메시지 바디 정보 직접 반환(view 조회X)
-     * - HttpMessageConverter 사용 -> StringHttpMessageConverter 적용 
-     */
-    @ResponseBody
-    @PostMapping("/request-body-string-v4")
-    public String requestBodyStringV4(@RequestBody String messageBody) {
-        
-        log.info("messageBody={}", messageBody);
-        
-        return "ok";
-        
-    }
+                log.info("username={}, age={}", helloData.getUsername(), helloData.getAge());
 
-    hi
- }
+                return "ok";
+
+            }
+
+            /**
+             * @ModelAttribute 생략 가능
+             * String, int 같은 단순 타입 = @RequestParam
+             * argument resolver 로 지정해둔 타입 외 = @ModelAttribute 
+             * argument resolver -> 스프링에서 지정해둔 @ModelAttribute로 지정하지 않을 객체들
+             */
+            @ResponseBody
+            @RequestMapping("/model-attribute-v2")
+            public String modelAttributeV2(HelloData helloData) {
+
+                log.info("username={}, age={}", helloData.getUsername(), helloData.getAge());
+
+                return "ok";
+
+            }
+            
+        }
 
 ```
+
+    - HTTP 바디
+
+```java
+
+        @RestController 
+        public class MappingController {
+            /**
+             * HttpServlet을 이용하여 Http message body 가져옴
+             */
+            @PostMapping("/request-body-string-v1")
+            public void requestBodyString(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+                ServletInputStream inputStream = request.getInputStream();
+                String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+
+                log.info("messageBody={}", messageBody);
+
+                response.getWriter().write("ok");
+
+            }
+
+            /**
+             * InputStream(Reader): HTTP 요청 메시지 바디의 내용을 직접 조회 
+             * OutputStream(Writer): HTTP 응답 메시지의 바디에 직접 결과 출력 
+             */
+            @PostMapping("/request-body-string-v2")
+            public void requestBodyStringV2(InputStream inputStream, Writer responseWriter) throws IOException {
+
+                String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+
+                log.info("messageBody={}", messageBody);
+
+                responseWriter.write("ok");
+
+            }
+
+            /**
+             * HttpEntity: HTTP header, body 정보를 편리하게 조회
+             * - 메시지 바디 정보를 직접 조회(@RequestParam X, @ModelAttribute X)
+             * - HttpMessageConverter 사용 -> StringHttpMessageConverter 적용 
+             *
+             * 응답에서도 HttpEntity 사용 가능
+             * - 메시지 바디 정보 직접 반환(view 조회X)
+             * - HttpMessageConverter 사용 -> StringHttpMessageConverter 적용 
+             **/
+            @PostMapping("/request-body-string-v3")
+            public HttpEntity<String> requestBodyStringV3(HttpEntity<String> httpEntity) {
+
+                String messageBody = httpEntity.getBody();
+
+                log.info("messageBody={}", messageBody);
+
+                return new HttpEntity<>("ok");
+
+            }
+
+            /**
+             * @RequestBody
+             * - 메시지 바디 정보를 직접 조회(@RequestParam X, @ModelAttribute X)
+             * - HttpMessageConverter 사용 -> StringHttpMessageConverter 적용 
+             *
+             * @ResponseBody
+             * - 메시지 바디 정보 직접 반환(view 조회X)
+             * - HttpMessageConverter 사용 -> StringHttpMessageConverter 적용 
+             */
+            @ResponseBody
+            @PostMapping("/request-body-string-v4")
+            public String requestBodyStringV4(@RequestBody String messageBody) {
+
+                log.info("messageBody={}", messageBody);
+
+                return "ok";
+
+            }
+
+            /**
+             * json
+             */
+            private ObjectMapper objectMapper = new ObjectMapper();
+
+            @PostMapping("/request-body-json-v1")
+            public void requestBodyJsonV1(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+                ServletInputStream inputStream = request.getInputStream();
+                String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+                log.info("messageBody={}", messageBody);
+
+                HelloData data = objectMapper.readValue(messageBody, HelloData.class);
+                log.info("username={}, age={}", data.getUsername(), data.getAge());
+
+                response.getWriter().write("ok");
+            }
+
+            /**
+             * @RequestBody
+             * HttpMessageConverter 사용 -> StringHttpMessageConverter 적용 *
+             * @ResponseBody
+             * - 모든 메서드에 @ResponseBody 적용
+             * - 메시지 바디 정보 직접 반환(view 조회X)
+             * - HttpMessageConverter 사용 -> StringHttpMessageConverter 적용 */
+            @ResponseBody
+            @PostMapping("/request-body-json-v2")
+            public String requestBodyJsonV2(@RequestBody String messageBody) throws IOException {
+
+                HelloData data = objectMapper.readValue(messageBody, HelloData.class);
+                log.info("username={}, age={}", data.getUsername(), data.getAge());
+
+                return "ok";
+            }
+
+            /**
+             * @RequestBody 생략 불가능(@ModelAttribute 가 적용되어 버림)
+             * HttpMessageConverter 사용 -> MappingJackson2HttpMessageConverter (content-type: application/json)
+             * requestBodyStringV3와 마찬가지로 HttpEntity로 대체 가능
+             */
+            @ResponseBody
+            @PostMapping("/request-body-json-v3")
+            public String requestBodyJsonV3(@RequestBody HelloData data) {
+                log.info("username={}, age={}", data.getUsername(), data.getAge());
+                return "ok";
+            }
+
+            /**
+             * @RequestBody 생략 불가능(@ModelAttribute 가 적용되어 버림)
+             * HttpMessageConverter 사용 -> MappingJackson2HttpMessageConverter (content-type: application/json)
+             *
+             * @ResponseBody 적용
+             * - 메시지 바디 정보 직접 반환(view 조회X)
+             * - HttpMessageConverter 사용 -> MappingJackson2HttpMessageConverter 적용
+            (Accept: application/json)
+             */
+            @ResponseBody
+            @PostMapping("/request-body-json-v5")
+            public HelloData requestBodyJsonV5(@RequestBody HelloData data) {
+                log.info("username={}, age={}", data.getUsername(), data.getAge());
+                return data;
+            }
+            
+        }
+
+```
+
+    - 헤더
+
+```java
+
+        @RestController 
+        public class MappingController {
+    
+            /**
+             *특정 헤더로 추가 매핑 (특정 헤더의 조건 여부)
+             * headers="mode",
+             * headers="!mode"
+             * headers="mode=debug"
+             * headers="mode!=debug"
+             */
+            @GetMapping(value = "/mapping-header", headers = "mode=debug")
+            public String mappingHeader() {
+                log.info("mappingHeader");
+                return "ok";
+            }
+
+            /**
+             * Content-Type 헤더 기반 추가 매핑 Media Type 
+             * consumes="application/json"
+             * consumes="!application/json"
+             * consumes="application/*"
+             * consumes="*\/*"
+             * MediaType.APPLICATION_JSON_VALUE
+             */
+            @PostMapping(value = "/mapping-consume", consumes = "application/json")
+            public String mappingConsumes() {
+                log.info("mappingConsumes");
+                return "ok";
+            }
+
+            /**
+             * Accept 헤더 기반 Media Type * produces = "text/html"
+             * produces = "!text/html" * produces = "text/*"
+             * produces = "*\/*"
+             */
+            @PostMapping(value = "/mapping-produce", produces = "text/html")
+            public String mappingProduces() {
+                log.info("mappingProduces");
+                return "ok";
+            }
+
+            /**
+             * 다양한 header 정보를 메서드의 매개변수로 받을 수 있음
+             */
+            @RequestMapping("/headers")
+            public String headers(HttpServletRequest request,
+                                  HttpServletResponse response,
+                                  HttpMethod httpMethod,
+                                  Locale locale,
+                                  @RequestHeader MultiValueMap<String, String> headerMap,
+                                  @RequestHeader("host") String host,
+                                  @CookieValue(value = "myCookie", required = false) String cookie
+            ) {
+
+                return "ok";
+
+            }   
+        }
+
+```
+
+## 다양한 매핑 응답 방법
+
+    - 정적 리소스
+
+        /static, /public, /resources, /META-INF/resources
+            -> 스프링부트가 클래스패스 다음의 위에 해당하는 경로 하위에 존재하는 정적 리소스를 제공함
+
+        src/main/resources/static/basic/hello-form.html 의 파일이 존재하면
+        http://localhost:8080/basic/hello-form.html의 URL로 파일 호출 가능
+
+    - 뷰 탬플릿
+
+```java
+
+        @Controller
+        public class ResponseViewController {
+        
+            // ModelAndView를 이용한 응답
+            @RequestMapping("/response-view-v1")
+            public ModelAndView responseViewV1() {
+                ModelAndView mav = new ModelAndView("response/hello")
+                        .addObject("data", "hello!");
+                return mav;
+            }
+        
+            // Model을 이용한 응답
+            @RequestMapping("/response-view-v2")
+            public String responseViewV2(Model model) {
+                model.addAttribute("data", "hello!!");
+                return "response/hello";
+            }
+            
+            // 매핑 URL과 뷰 논리이름이 동일한 경우 뷰 논리이름을 return하지 않아도 알아서 반환해줌
+            // 명시적이지 않아 권장하지 않음
+            @RequestMapping("/response/hello")
+            public void responseViewV3(Model model) {
+                model.addAttribute("data", "hello!!");
+            }
+            
+        }
+
+```
+
+    - HTTP 바디
+
+```java
+
+        @Controller
+        // @RestController -> @Controller, @ResponseBody를 합친 것과 같음
+        // 클래스 레벨에 @ResponseBody를 적용하면 하위의 모든 메서드 레벨에 @ResponseBody를 붙인것과 같음
+        // 하위 메서드들이 전부 HTTP 바디로 응답이 나가는 경우 사용
+        public class ResponseBodyController {
+    
+            @GetMapping("/response-body-string-v1")
+            public void responseBodyV1(HttpServletResponse response) throws IOException {
+                response.getWriter().write("ok");
+            }
+            
+            @GetMapping("/response-body-string-v2")
+            public ResponseEntity<String> responseBodyV2() {
+                return new ResponseEntity<>("ok", HttpStatus.OK);
+            }
+            
+            @ResponseBody
+            @GetMapping("/response-body-string-v3")
+            public String responseBodyV3() {
+                return "ok";
+            }
+
+            @GetMapping("/response-body-json-v1")
+            public ResponseEntity<HelloData> responseBodyJsonV1() {
+                HelloData helloData = new HelloData();
+                helloData.setUsername("userA");
+                helloData.setAge(20);
+                
+                return new ResponseEntity<>(helloData, HttpStatus.OK);
+            }
+            
+            @ResponseStatus(HttpStatus.OK)
+            @ResponseBody
+            @GetMapping("/response-body-json-v2")
+            public HelloData responseBodyJsonV2() {
+                HelloData helloData = new HelloData();
+                helloData.setUsername("userA");
+                helloData.setAge(20);
+                
+                return helloData;
+            }
+        }
+```
+
+
+
+
 매핑 관련 공식 메뉴얼  
 [요청 파라미터 목록 공식 메뉴얼](https://docs.spring.io/spring-framework/docs/current/reference/html/web.html#mvc-ann-arguments)  
 [응답 목록 공식 메뉴얼](https://docs.spring.io/spring-framework/docs/current/reference/html/web.html#mvc-ann-return-types)
