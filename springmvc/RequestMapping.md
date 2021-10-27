@@ -66,12 +66,6 @@ sort: 2
 
 ```
 
-## RequestMappingHandlerMapping
-
-    - @RequestMapping을 지원하는 핸들러 매핑
-
-    - 스프링 빈 중에서 @RequestMapping 또는 @Controller가 클래스 레벨에 작성되어 있을 경우 핸들러가 취급할 수 있는 매핑 정보로 인식 함
-
 ## 다양한 매핑 요청 방법
 
     - get방식 쿼리파리미터, post방식 Form전송
@@ -569,6 +563,53 @@ sort: 2
         }
 ```
 
+## RequestMappingHandlerMapping
+
+    - @RequestMapping을 지원하는 핸들러 매핑
+
+    - 스프링 빈 중에서 @RequestMapping 또는 @Controller가 클래스 레벨에 작성되어 있을 경우 핸들러가 취급할 수 있는 매핑 정보로 인식 함 
+
+## RequestMappingHandlerAdapter
+
+    - @RequestMapping을 지원하는 핸들러 어뎁터
+
+    - RequestMappingHandlerAdapter가 실제 핸들러(Controller)를 호출함
+
+        @RequestMapping이 붙은 메서드들을 호출하는 역할을 함
+        이 때, 메서드들의 매개변수에 대한 처리는 HandlerMethodArgumentResolver가 수행함
+
+            @RequestParam, @ModelAttribute, @RequestBody, HttpEntity, ...
+            수많은 타입의 매개변수들이 존재하고 이에 대한 처리를 위해 
+            HandlerMethodArgumentResolver 인터페이스를 구현한 수많은 구현체들이 개입함
+
+## HandlerMethodArgumentResolver
+
+    - 매개변수에 대한 처리를 담당하는 역할을 하는 인터페이스
+
+    - 매개변수 타입에 따라 여러 구현체들이 스프링에 구현되어 있음
+
+    - HandlerMethodArgumentResolver를 줄여서 ArgumentResolver로 불리고 있음
+
+    - 핸들러 어댑터가 핸들러를 호출 할 때 매개변수에 대한 처리 필요 시 HandlerMethodArgumentResolver를 이용
+
+    - supportsParameter() -> 호출된 핸들러의 매개변수에 대한 처리 지원 여부를 판단
+
+    - ResolveArgument() -> 필요에 따라 매개변수 타입의 객체 생성 
+
+## HandlerMethodReturnValueHandler
+
+    - HTTP 요청에 따라 호출된 핸들러의 처리 이후 응답 값의 변환을 담당하는 역할을 하는 인터페이스
+
+    - 응답 타입에 따라 여러 구현체들이 스프링에 구현되어 있음
+
+    - HandlerMethodReturnValueHandler를 줄여서 ReturnValueHandler로 불리고 있음
+
+    - 핸들러 어뎁터가 호출한 핸들러의 응답 값에 대한 처리 필요 시 HandlerMethodReturnValueHandler를 이용
+
+    - supportsReturnType() -> 핸들러의 응답 타입에 대한 처리 지원 여부를 판단
+
+    - handleReturnValue() -> 응답 값의 변환 작업
+
 ## HttpMessageConverter
 
     - 요청과 응답 시에 HTTP 바디에 메시지를 바로 입력하는 경우에 사용됨
@@ -618,6 +659,24 @@ sort: 2
             요청 예) @RequestBody Data data
             응답 예) @ResponseBody return data
                 응답 시 Content-Type에 application/json 관련 타입으로 반환함
+
+    - 호출 시점
+
+        HandlerMethodArgumentResolver가 매개변수 타입에 따라 처리를 진행할 때
+        매개변수의 타입이 @RequestBody, HttpEntity인 경우 HttpMessageConverter를 호출하여 처리를 위임함
+
+        HandlerMethodReturnValueHandler가 핸들러의 응답 타입에 따라 처리를 진행할 때
+        응답 타입이 @ResponseBody, HttpEntity인 경우 HttpMessageConverter를 호출하여 처리를 위임함
+
+        RequestResponseBodyMethodProcessor 
+            -> @RequestBody, @ResponseBody에 이용되는 HandlerMethodArgumentResolver
+
+        HttpEntityMethodProcessor
+            -> HttpEntity에 이용되는 HandlerMethodArgumentResolver
+
+## WebMvcConfigurer
+
+    - spring mvc에 대한 기능 확장 필요 시 WebMvcConfigurer를 이용하면 됨
 
 매핑 관련 공식 메뉴얼  
 [요청 파라미터 목록 공식 메뉴얼](https://docs.spring.io/spring-framework/docs/current/reference/html/web.html#mvc-ann-arguments)  
