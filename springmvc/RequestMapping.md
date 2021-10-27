@@ -569,8 +569,55 @@ sort: 2
         }
 ```
 
+## HttpMessageConverter
 
+    - 요청과 응답 시에 HTTP 바디에 메시지를 바로 입력하는 경우에 사용됨
 
+        뷰 탬플릿으로 렌더링되어 반환되는 경우에는 ViewResolver가 이용되나 
+        HTTP 바디에 메시지로 반환되는 경우에는 ViewResolver 대신 HttpMessageConverter가 이용됨
+
+        HTTP 요청 -> 메서드 레벨에 @RequestBody 또는 매개변수로 HttpEntity(RequestEntity) 이용 시 컨버터 사용
+        HTTP 응답 -> 메서드 레벨에 @ResponseBody 또는 매개변수로 HttpEntity(ResponseEntity) 이용 시 컨버터 사용
+
+    - org.springframework.http.converter.HttpMessageConverter 인터페이스
+
+        HTTP 요청을 수용할 수 있는지 판단하는 canRead()와 HTTP 응답이 가능한지 판단하는 canWrite() 기능
+        canRead() 후 문제 없을 시 read() 호출, canWrite() 후 문제 없을 시 write() 호출
+
+        스프링에서는 다양한 메시지 컨버터를 제공
+    
+        대상 클래스 타입과 미디어 타입을 체크하여 사용 가능한 컨버터 결정
+
+    - HttpMessageConverter 우선순위
+
+        ByteArrayHttpMessageConverter > StringHttpMessageConverter > MappingJackson2HttpMessageConverter
+
+        - ByteArrayHttpMessageConverter
+
+            byte[] 데이터 처리
+    
+            클래스 타입: byte[], 미디어타입: */*(모든 타입 처리 가능)
+            요청 예) @RequestBody byte[] data
+            응답 예) @ResponseBody return byte[]
+                응답 시 Content-Type에 application/octet-stream로 반환함
+
+        - StringHttpMesssageConverter
+
+            String 데이터 처리
+
+            클래스 타입: String, 미디어타입: */*(모든 타입 처리 가능)
+            요청 예) @RequestBody String data
+            응답 예) @ResponseBody return "..."
+                응답 시 Content-Type에 text/plain로 반환함
+
+        - MappingJackson2HttpMessageConverter
+
+            Json 데이터 처리
+
+            클래스 타입: 객체 또는 HashMap , 미디어타입: application/json 관련 타입만 처리 가능
+            요청 예) @RequestBody Data data
+            응답 예) @ResponseBody return data
+                응답 시 Content-Type에 application/json 관련 타입으로 반환함
 
 매핑 관련 공식 메뉴얼  
 [요청 파라미터 목록 공식 메뉴얼](https://docs.spring.io/spring-framework/docs/current/reference/html/web.html#mvc-ann-arguments)  
