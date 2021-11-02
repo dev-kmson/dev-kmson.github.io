@@ -563,6 +563,40 @@ sort: 2
         }
 ```
 
+## PRG 패턴
+
+    - POST -> Redirect -> GET 패턴
+
+    - 브라우저 새로고침 시 이전의 POST 요청이 재요청되는 문제점을 방지하기 위함
+
+        단순 조회가 아닌 등록 기능 같이 여러번 작업되면 문제가 발생하기 때문에 방지해야 함
+
+    - POST 요청으로 인한 작업 수행 후 브라우저를 Redirect 시켜 새로고침 하여도 GET방식으로 요청되도록 함
+
+        상품 등록을 위해 POST 요청 -> 상품 목록 화면으로 Redirect -> 새로고침 시 상품 목록 조회를 위한 GET 요청  
+
+### RedirectAttributes
+
+    - Redirect 시 URL 인코딩, PathVariable 바인딩, 쿼리 파라미터 처리를 도와주는 역할
+
+```java
+
+        @PostMapping("/add")
+        public String addItemV6(Item item, RedirectAttributes redirectAttributes) {
+            Item savedItem = itemRepository.save(item);
+            
+            redirectAttributes.addAttribute("itemId", savedItem.getId());
+            redirectAttributes.addAttribute("status", true);
+                
+            return "redirect:/basic/items/{itemId}";
+        }
+
+```
+
+        return 시에 PathVariable 바인딩 처리없이 문자 연결자(+)를 통해 return 하면 URL 인코딩 처리가 되지 않아 위험함
+
+        addAttribute를 통해 추가된 속성 중 PathVariable 바인딩에 이용되지 않는 속성은 쿼리 파라미터로 처리됨
+
 ## RequestMappingHandlerMapping
 
     - @RequestMapping을 지원하는 핸들러 매핑
