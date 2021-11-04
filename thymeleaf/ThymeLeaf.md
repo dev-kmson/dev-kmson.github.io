@@ -4,6 +4,12 @@ sort: 1
 
 # ThymeLeaf
 
+[기본 메뉴얼](https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html)  
+[스프링 통합 메뉴얼](https://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html)
+
+[템플릿 엔진 설정](https://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html#the-springstandard-dialect)  
+[뷰 리졸버 설정](https://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html#views-and-view-resolvers)
+
 ---
 
 ## text, utext
@@ -375,3 +381,154 @@ sort: 1
 ```
 
         인라인 적용 시 스크립트 태그 안에서 타임리프 반복 기능을 제공함
+
+## 템플릿 레이아웃
+
+    - 화면 레이아웃을 공통적으로 가져가고 특정한 부분들을 주입 받아 화면을 구성할 수 있음
+
+```html
+
+    <!DOCTYPE html>
+    <html th:fragment="layout (title, content)" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title th:replace="${title}">레이아웃 타이틀</title> </head>
+    <body>
+    <h1>레이아웃 H1</h1>
+    <div th:replace="${content}"> 
+        <p>레이아웃 컨텐츠</p>
+    </div>
+    <footer> 
+        레이아웃 푸터
+    </footer>
+    </body>
+    </html>
+    
+```
+
+```html
+    
+    <!DOCTYPE html>
+      <html th:replace="~{template/layoutExtend/layoutFile :: layout(~{::title}, ~{::section})}" xmlns:th="http://www.thymeleaf.org">
+      <head>
+    <title>메인 페이지 타이틀</title> </head>
+      <body>
+      <section>
+        <p>메인 페이지 컨텐츠</p>
+        <div>메인 페이지 포함 내용</div> 
+      </section>
+      </body>
+      </html>
+
+```
+
+        th:fragment -> th:replace, th:insert로 대체 또는 삽입되어질 대상, 메서드처럼 인자를 받을 수 있음
+
+        th:replace -> fragment 지정 또는 fragment의 인자로 대상 태그를 대체함 
+        th:insert ->  fragment 지정 또는 fragment의 인자로 대상 태그의 하위에 삽입함
+
+            fragment 지정 방법 -> ~{경로 :: 지정할 fragment(~{::태그}, ~{::태그})}
+
+                    html 파일의 경로를 지정하고 해당 html파일의 fragment를 지정하여 replace 혹은 insert
+
+                    태그를 지정하여 인자로 넘길 수 있음
+        
+            fragment 인자 사용 방법 -> ${인자}
+
+                    fragment를 지정할 때 인자로 넘긴 태그를 SpringEL 표현식을 통하여 replace 혹은 insert  
+
+## 입력 폼
+
+### id, name, value
+
+    - 입력 폼과 관련하여 타임리프가 스프링과 통합되어 여러 편의 기능을 제공함
+
+        입력 폼 편의 기능을 사용하기 위해 컨트롤러 단에서 객체를 모델을 통해 넘겨야 함
+        모델로 넘어온 객체를 타임리프를 통해 th:object, th:field 지정 
+
+```html
+
+    <form action="item.html" th:action th:object="${item}" method="post">
+
+        <input type="text" id="itemName" th:field="*{itemName}" class="form-control" placeholder="이름을 입력하세요">
+
+```
+
+        ${item.itemName} -> *{itemName} 
+
+            *{...} 선택 변수 식을 이용하여 간소화 가능
+
+
+        렌더링 시 th:field가 지정되어 있는 태그에 id, name, value 속성을 자동으로 만들어 줌
+        
+        value -> 객체에 들어있는 값 부여, 빈 객체의 경우 값이 없으므로 빈값으로 처리되어 들어감
+
+### 단일 checkbox
+
+    - 단일 체크박스의 문제점
+
+
+        체크박스 체크 시에는 "on"이 대입되어 전송되나 체크박스 체크 해제 시에는 아무런 값도 전송되지 않음
+        아무런 값도 전송되지 않은 것이 체크를 해제하여 그런 것인지 어떠한 행위 자체가 일어나지 않아 그런 것인지
+        구분을 할 수 없어 혼란을 야기시킴
+
+            스프링 타입 컨버터에 의해 "on" 값이 들어있는 경우 true 값으로 처리됨
+
+        뷰 렌더링 시 체크박스에 체크된 상태로 나타내어야 하는 경우에 checked 속성을 추가하고
+        체크박스에 체크를 해제된 상태로 나타내어야 하는 경우 checekd 속성 자체를 없애야하는 번거러운 과정이 존재
+        
+
+    - 스프링에서의 해결 방법
+
+```html
+
+    <input type="checkbox" id="open" name="open" class="form-check-input"> 
+    <input type="hidden" name="_open" value="on"/>
+
+```
+
+        체크박스 체크 시 : open에 값이 들어있으니 _open은 무시 -> true 값으로 처리함
+        체크박스 체크 해제 시 : open 속성 자체가 없고 _open만 있는 것을 확인 -> false 값으로 처리함 
+
+
+    - 타임리프에서의 해결 방법
+
+```html
+
+        <input type="checkbox" id="open" th:field="*{open}" class="form-check-input">
+
+```
+        히든필드 자동 생성
+
+            개발자가 직접 히든필드를 작성하여야 했던 것을 타임리프가 렌더링 시 
+            th:field가 지정되어 있는 태그에 히든필드를 자동으로 만들어 줌
+
+        checked 속성 자동 부여
+
+            개발자가 직접 체크박스 체크, 체크해제 여부를 판단하여 checked 속성을 부여했어야 하는 것을
+            타임리프가 렌더링 시 th:field가 지정되어 있는 태그에 chekced 속성을 자동으로 처리해 줌            
+
+
+### 멀티 checkbox
+
+    - 타임리프가 단일 체크박스에서 지원하는 기능을 그대로 제공함
+
+        히든필드 자동 생성, checked 속성 자동 부여
+
+    - 반복을 통한 멀티 체크박스 표현 시 id, Label 동적 처리 문제 해결
+
+```html
+
+    <div th:each="region : ${regions}" class="form-check form-check-inline">
+          <input type="checkbox" th:field="*{regions}" th:value="${region.key}" class="form-check-input">
+          <label th:for="${#ids.prev('regions')}" th:text="${region.value}" class="form-check-label">서울</label>
+    </div>
+
+```
+
+        타임리프가 렌더링 될 때 id는 모두 다른 값이 들어가야 하므로
+        th:each로 반복되는 경우 th:field가 지정되어 Id 자동 생성 시 
+        순차적으로 숫자를 뒤에 붙여 렌더링 함
+
+        라벨의 id 역시 각각의 체크박스 input 태그에 들어간 id와 같은 값을 부여받아야 하므로
+        유틸리티 객체를 이용하여 동일한 id를 붙여받을 수 있도록 함
+        

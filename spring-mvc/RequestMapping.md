@@ -563,6 +563,30 @@ sort: 2
         }
 ```
 
+## @ ModelAttribute 특별한 사용법
+
+    - 각각 컨트롤러의 매핑되는 메서드들에 중복 코드가 발생하는 경우 사용
+
+```java
+
+        @ModelAttribute("regions")
+        public Map<String, String> regions() {
+            Map<String, String> regions = new LinkedHashMap<>(); regions.put("SEOUL", "서울");
+            regions.put("BUSAN", "부산");
+            regions.put("JEJU", "제주");
+            return regions;
+        }
+
+```
+
+        메서드에 @ModelAttribute를 이용 시 해당 컨트롤러의 어떤 메서드가
+        호출되든지 상관없이 호출된 메서드에 @ModelAttribute를 이용한 메서드의 반환 객체를
+        모델에 담아 반환함
+
+            매핑되는 메서드에 파라미터로 사용되는 @ModelAttribute와는 별개의 기능임
+
+        
+
 ## PRG 패턴
 
     - POST -> Redirect -> GET 패턴
