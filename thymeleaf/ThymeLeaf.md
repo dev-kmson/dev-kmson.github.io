@@ -514,7 +514,7 @@ sort: 1
 
         히든필드 자동 생성, checked 속성 자동 부여
 
-    - 반복을 통한 멀티 체크박스 표현 시 id, Label 동적 처리 문제 해결
+    - 반복을 통한 멀티 체크박스 표현 시 id, label 동적 처리 문제 해결
 
 ```html
 
@@ -532,3 +532,38 @@ sort: 1
         라벨의 id 역시 각각의 체크박스 input 태그에 들어간 id와 같은 값을 부여받아야 하므로
         유틸리티 객체를 이용하여 동일한 id를 붙여받을 수 있도록 함
         
+### 라디오 버튼
+
+    - checked 속성 자동 부여함
+
+    - 반복을 통한 라디오 버튼 표현 시 id, label 동적 처리 문제 해결
+
+    - 라디오 버튼은 히든 필드를 자동으로 생성해주지 않는데 그 이유는 한번 라디오 버튼이 체크되면 그 뒤에는 라디오 버튼을 없앨 수 없기 때문임
+
+        최초 라디오 버튼을 클릭하지 않으면 null로 넘어가나 사용자가 라디오 버튼을 체크하지 않았다는 것이 명확하므로 혼돈의 여지가 없음
+
+```html
+
+<div th:each="type : ${itemTypes}" class="form-check form-check-inline">
+    <input type="radio" th:field="*{itemType}" th:value="${type.name()}" class="form-check-input">
+    <label th:for="${#ids.prev('itemType')}" th:text="${type.description}" class="form-check-label">
+        BOOK
+    </label>
+</div>
+
+```
+
+### 셀렉트 박스
+
+    - selected 속성 자동 부여함
+
+```html
+
+<select th:field="*{deliveryCode}" class="form-select"> 
+    <option value="">==배송 방식 선택==</option>
+    <option th:each="deliveryCode : ${deliveryCodes}" 
+            th:value="${deliveryCode.code}" th:text="${deliveryCode.displayName}">
+        FAST
+    </option>
+</select>
+```
