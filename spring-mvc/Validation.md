@@ -251,6 +251,42 @@ if (!StringUtils.hasText(item.getItemName())) {
 ValidationUtils.rejectIfEmptyOrWhitespace(bindingResult, "itemName", "required");
 
 ```
-            
-            
+
+## typeMismatch
+
+    - 스프링이 처리해주는 오류 메시지
+
+        타입이 불일치할 경우 스프링이 typeMismatch라는 에러코드를 가진 FieldError를 생성함
+
+```text
+
+        codes[typeMismatch.item.price,typeMismatch.price,typeMismatch.java.lang.Integer,typeMismatch]
+    
+```
+
+        스프링은 타입 오류가 발생하면 typeMismatch 라는 오류 코드를 사용 
+        이 오류 코드가 MessageCodesResolver를 통하여 메시지 키를 생성한 것
+
+        개발자가 직접 errors.properties에 메시지를 정의하여 오류 메시지를 처리하기도 하지만
+        타입 불일치와 같이 스프링이 직접 처리하는 오류 메시지의 경우 디폴트로 작성되어 있는 메시지는
+        일반 사용자에게 보여주기에는 무리가 있는 메시지로 작성되어 있음
+
+```text
+
+        Failed to convert property value of type java.lang.String to required type
+        java.lang.Integer for property price; nested exception is
+        java.lang.NumberFormatException: For input string: "A"
+
+```
+
+        이러한 불친절한 메시지를 사용자에게 노출시키지 않기 위해서 개발자가 메시지를 정의해 주어야 함
+
+```properties
+
+        typeMismatch.java.lang.Integer=숫자를 입력해주세요.
+        typeMismatch=타입 오류입니다.
+
+```
+
+
             
