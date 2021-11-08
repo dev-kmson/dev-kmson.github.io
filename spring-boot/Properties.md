@@ -43,5 +43,9 @@ spring.thymeleaf.prefix = [path]
 # 예시) spring.thymeleaf.suffix=.html (default) 
 spring.thymeleaf.suffix = [ext]
 
+# MessageSource basename 설정
+# 클래스패스 하위의 [fileName].properties 파일로 설정함을 의미
+# 예시) spring.messages.basename=messages (default)
+spring.messages.basename= [fileName1], [fileName2]
 
 ```

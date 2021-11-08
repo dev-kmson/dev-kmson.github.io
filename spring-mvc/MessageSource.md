@@ -22,7 +22,7 @@ sort: 3
 ```properties
 
             # default
-            spring.mesages.basename=messages
+            spring.messages.basename=messages
 
 ```
 
