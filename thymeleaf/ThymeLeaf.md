@@ -567,3 +567,12 @@ sort: 1
     </option>
 </select>
 ```
+
+## etc
+
+    - Safe Navigation Operator
+        
+        ${객체?.메서드명()}
+
+        객체가 null인지 판단하여 null인 경우 NullPointerException 대신 null을 반환하여 오류 처리되지 않도록 함
+        ${객체.메서드명()}일 경우 객체가 null이면 NullPointerException 발생
