@@ -288,5 +288,111 @@ ValidationUtils.rejectIfEmptyOrWhitespace(bindingResult, "itemName", "required")
 
 ```
 
+## Validator
 
-            
+### version1
+
+    - 검증 로직으로 인해 컨트롤러의 핵심 로직이 명확히 보이지 않아 검증 로직을 별도 역할로 분리
+
+
+```java
+
+    public class ItemValidator {
+
+        public void validate(Object target, Errors errors) {
+            ...
+        }
+        
+    }
+
+```
+
+        validate() 안에 검증 로직을 구현
+
+            validate()는 Object target, Errors errors 매개변수를 가지는데
+            target에는 검증할 모델 객체를 넘기고 errors에는 BindingResult를 넘김
+
+        직접 Validator 클래스를 작성하고 검증 로직을 validate() 안에 
+        구현 후 클래스를 인스턴스화하여 검증 기능을 수행할 수도 있지만
+        스프링에서 제공하는 Validator 인터페이스를 이용하면
+        컨트롤러에서 검증기를 자동으로 적용할 수 있음
+
+### version2
+
+    - 스프링에서 제공하는 Validator 이용
+
+```java
+    
+    // Validator
+
+    @Component
+    public class ItemValidator implements Validator {
+    
+        @Override
+        public boolean supports(Class<?> clazz) {
+            return Item.class.isAssignableFrom(clazz);
+        }
+    
+        @Override
+        public void validate(Object target, Errors errors) {
+            ...
+        }
+    }
+
+```
+
+        스프링이 제공하는 Validator 인터페이스를 구현
+
+        supports : 해당 검증기를 지원하는 여부 확인
+        validate : 검증 로직 구현
+
+```java
+
+    // Controller
+    
+    private final ItemValidator itemValidator;
+    
+    @InitBinder
+    public void init(WebDataBinder dataBinder) {
+        dataBinder.addValidators(itemValidator);
+    }
+
+    @PostMapping("/add")
+    public String addItemV6(@Validated @ModelAttribute Item item, 
+            BindingResult bindingResult, RedirectAttributes redirectAttributes){
+        
+        ...
+    }
+```
+
+        @InitBinder와 WebDataBinder를 이용하여 itemValidator에 대한 검증기를 자동으로 적용 
+        따라서, 어느 매핑 메서드에서든 검증기를 실행할 수 있음        
+
+        매핑 메서드에 @Validated는 검증기를 실행하라는 의미
+        WebDataBinder에 등록한 검증기를 찾아서 실행함
+        이 때, 검증기는 여러개가 등록될 수 있으므로 어떤 검증기를 실행한 것인지에 대한 구분이 필요함
+        이 구분은 Validator 인터페이스의 supports가 기능을 수행하며
+        @ModelAttribute의 객체 타입을 검증기로 지원하는지 체크 후 지원하지 않는 검증기이면
+        등록되어 있는 다른 검증기에서 다시 supports를 수행하여 지원하는 검증기를 탐색함
+        
+    - global 설정
+
+        모든 컨트롤러에서 Validator가 적용될 수 있도록 다음과 같이 설정할 수 있음
+
+```java
+
+    @SpringBootApplication
+    public class ItemServiceApplication implements WebMvcConfigurer {
+        
+        public static void main(String[] args) {
+            SpringApplication.run(ItemServiceApplication.class, args);
+        }
+        
+        @Override
+        public Validator getValidator() {
+            return new ItemValidator();
+        }
+    }
+
+```
+
