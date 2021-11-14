@@ -165,5 +165,31 @@ violation.message=1000에서 1000000 사이여야 합니다
             검증 어노테이션에 설정된 message 옵션의 값 확인
             라이브러리에서 제공하는 기본 값 사용
         
+## ObjectError 처리
 
+    - @ScriptAssert를 통한 ObjectError 처리
 
+        검증 어노테이션은 필드 단위로 작성되므로 ObjectError의 처리 방법이 따로 필요함
+        
+```java
+
+        @Data
+        @ScriptAssert(lang = "javascript", script = "_this.price * _this.quantity >= 10000", 
+                message = "총합이 10000원 이상이어야 합니다")
+        public class Item {
+            //...
+        }
+
+```
+
+```text
+
+        codes [ScriptAssert.item,ScriptAssert]
+
+```
+
+        @ScriptAssert 작성 시 ObjectError 처리 및 메시지 키 자동 생성 등 여러 기능을 제공해주나
+        실무에서는 검증 기능이 해당 객체의 범위를 벗어나는 등 제약이 많고 복잡함
+
+        따라서, ObjectError의 경우 @ScriptAssert를 억지로 사용하기 보다는 기존 자바 코드 작성을
+        통해 해결하는 것이 권장됨
