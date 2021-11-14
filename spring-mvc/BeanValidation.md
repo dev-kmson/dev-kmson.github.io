@@ -193,3 +193,118 @@ violation.message=1000에서 1000000 사이여야 합니다
 
         따라서, ObjectError의 경우 @ScriptAssert를 억지로 사용하기 보다는 기존 자바 코드 작성을
         통해 해결하는 것이 권장됨
+
+## groups
+
+    - 같은 모델 객체의 등록 시 요구사항과 수정 시 요구사항이 다른 경우 각각 그룹으로 나누어 적용
+
+        그룹을 적용하기 위해 각각 등록용 인터페이스와 수정용 인터페이스를 생성
+
+```java
+
+        public interface SaveCheck {}
+        
+        public interface UpdateCheck {}
+
+```
+
+        검증 어노테이션에 어느 그룹에 적용될 어노테이션인지를 명시함
+
+```java
+
+        @Data
+        public class Item {
+            @NotNull(groups = UpdateCheck.class) 
+            private Long id;
+            
+            @NotBlank(groups = {SaveCheck.class, UpdateCheck.class})
+            private String itemName;
+            
+            @NotNull(groups = {SaveCheck.class, UpdateCheck.class})
+            @Range(min = 1000, max = 1000000, groups = {SaveCheck.class, UpdateCheck.class})
+            private Integer price;
+            
+            @NotNull(groups = {SaveCheck.class, UpdateCheck.class})
+            @Max(value = 9999, groups = SaveCheck.class)  
+            private Integer quantity;
+            
+            public Item() {}
+            
+            public Item(String itemName, Integer price, Integer quantity) {
+                this.itemName = itemName;
+                this.price = price;
+                this.quantity = quantity;
+            } 
+        }
+
+```
+
+        @Validated 옵션을 통하여 그룹을 선택할 수 있음
+
+            @Valid에는 그룹을 선택할 수 있는 옵션이 존재하지 않음
+            groups 기능을 이용하려면 @Validated를 사용하여야 함
+
+```java
+
+        @PostMapping("/add")
+        public String addItemV2(@Validated(SaveCheck.class) @ModelAttribute Item item, 
+                BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+            //...
+        }
+
+```
+
+        groups 기능을 이용하여 특정 기능에 따라 검증 적용을 다르게 할 수 있지만
+        인터페이스 생성과 그룹 지정 등 복잡도 증가
+
+        실무에서는 등록용 폼 객체와 수정용 폼 객체를 분리해서 사용하기 때문에
+        실제로 groups 기능은 잘 사용되지 않음
+
+## form 객체 분리
+
+    - 동일한 모델 객체가 아닌 폼에 따른 객체를 분리
+
+        등록과 수정 폼에 따라 필요로 하는 데이터가 서로 다르기 때문에 
+        동일한 모델 객체를 이용하지 않고 서로 다른 객체로 관리하는 것이 좋음
+    
+            Item 모델 객체를 ItemSaveForm, ItemUpdateForm 으로 분리
+            
+                일반적으로 ...From, ...Request, ...Dto 등의 네이밍 사용
+
+        기존 Item 모델 객체에 존재하던 검증 어노테이션을 등록 폼과 수정 폼의 요구 사항에 맞게
+        구분하여 검증 어노테이션을 적용함 
+
+```java
+
+        @PostMapping("/add")
+        public String addItem(@Validated @ModelAttribute ItemSaveForm form,
+            BindingResult bindingResult, RedirectAttributes redirectAttributes){
+    
+                //...
+
+                Item item = new Item();
+                item.setItemName(form.getItemName());
+                item.setPrice(form.getPrice());
+                item.setQuantity(form.getQuantity());
+                
+                //...
+        }
+
+```
+
+        모델 객체로 기능에 맞는 폼 객체를 이용
+        
+            모델 객체로 별도의 폼 객체를 두었기 때문에 도메인 객체인 Item 객체를 
+            생성 및 변환해주는 과정이 추가됨
+
+## RequestBody
+
+    - @RequestBody에 Bean Validation 적용
+
+        @ModelAttribute와 마찬가지로 @RequestBody 또한 @Valid, @validated를 적용할 수 있음
+        단, @ModelAttribute와는 다르게 타입 변환 실패 시 컨트롤러 자체가 호출되지 못하는 현상을
+        방지 할 수 없음
+
+            @ModelAttribute는 필드 단위로 정교하게 바인딩이 적용되어 특정 필드 바인딩이 실패하더라도
+            나머지 필드는 정상적으로 바인딩되나 @RequestBody에 이용되는 HttpMessageConverter는
+            JSON 데이터를 객체로 변경하지 못하면 이후 단계가 진행되지 못하고 예외가 발생함
