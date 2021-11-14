@@ -127,4 +127,43 @@ violation.message=1000에서 1000000 사이여야 합니다
 
         2. 타입 변환을 성공한 필드에 대해서만 Bean Validation을 적용
                 
+            LocalValidatorFactoryBean이 FieldError, ObjectError 생성 및 BindResult에 추가
+
+## errorCode
+
+    - MessageCodesResolver에 의한 메시지 키 자동 생성
+
+        BindingResult의 rejectValue(), reject()에 의하여 MessageCodesResolver가 호출되어
+        메시지 키를 자동 생성한 것과 같이 Bean Validation 또한 rejectValue(), reject()를 통해
+        검증 어노테이션마다 MessageCodesResolver를 호출하여 메시지 키를 자동으로 생성함
+
+```text
+
+        codes [NotBlank.item.itemName,NotBlank.itemName,NotBlank.java.lang.String,NotBlank]
+        codes [Range.item.price,Range.price,Range.java.lang.Integer,Range]
+
+```
+
+        메시지 키가 자동으로 생성되었으므로 errors.properties에 메시지 키에 대응되는 값을 작성하여
+        개발자가 작성한 오류 메시지를 전달할 수 있음
+
+```properties
+
+        # errors.properties Bean Validation 추가 
+        
+        NotBlank.item.itemName=상품 이름을 입력하세요
+        
+        NotBlank={0} 공백X
+        Range={0}, {2} ~ {1} 허용
+        Max={0}, 최대 {1}
+
+```
+
+        Bean Validation의 메시지 탐색 순서
+
+            MessageCodesResolver에 의하여 생성된 키의 순서대로 messageSource 확인
+            검증 어노테이션에 설정된 message 옵션의 값 확인
+            라이브러리에서 제공하는 기본 값 사용
+        
+
 
