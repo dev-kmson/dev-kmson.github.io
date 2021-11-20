@@ -59,9 +59,9 @@ violation.message=1000에서 1000000 사이여야 합니다
 
 ```
 
-하이버네이트 Validator 관련 링크
-[공식 사이트](http://hibernate.org/validator/)
-[공식 메뉴얼](https://docs.jboss.org/hibernate/validator/6.2/reference/en-US/html_single/)
+하이버네이트 Validator 관련 링크  
+[공식 사이트](http://hibernate.org/validator/)  
+[공식 메뉴얼](https://docs.jboss.org/hibernate/validator/6.2/reference/en-US/html_single/)  
 [검증 어노테이션 모음](https://docs.jboss.org/hibernate/validator/6.2/reference/en-US/html_single/#validator-defineconstraints-spec)
 
 ## Spring - BeanValidator
