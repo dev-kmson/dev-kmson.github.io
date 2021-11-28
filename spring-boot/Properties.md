@@ -36,16 +36,27 @@ spring.mvc.view.prefix = [path]
 spring.mvc.view.suffix = [ext]
 
 # thymeleaf 뷰 설정을 위한 파일 경로
-# 예시) spring.thymeleaf.prefix=classpath:/templates/ (default) 
+# 예시) spring.thymeleaf.prefix = classpath:/templates/ (default) 
 spring.thymeleaf.prefix = [path]
 
 # thymeleaf 뷰 설정을 위한 파일 확장자
-# 예시) spring.thymeleaf.suffix=.html (default) 
+# 예시) spring.thymeleaf.suffix = .html (default) 
 spring.thymeleaf.suffix = [ext]
 
 # MessageSource basename 설정
 # 클래스패스 하위의 [fileName].properties 파일로 설정함을 의미
-# 예시) spring.messages.basename=messages (default)
+# 예시) spring.messages.basename = messages (default)
 spring.messages.basename= [fileName1], [fileName2]
+
+# 쿠키를 통한 세션 유지 설정
+# 해당 옵션을 설정하지 않으면 최초 세션 이용 시 URL에 jsessionid=... 으로 값이 노출 됨
+# 예시) server.servlet.session.tracking-modes = cookie
+server.servlet.session.tracking-modes = [mode]
+
+# 세션 타임아웃 설
+# 클라이언트에서 서버로 요청이 온 시점을 기준으로 세션 유지할 시간을 설정함
+# 60초 단위로 설정하여야 함 (60, 120, 180, ...)
+# 예시) server.servlet.session.timeout = 1800 (default)
+server.servlet.session.timeout = [time]
 
 ```
