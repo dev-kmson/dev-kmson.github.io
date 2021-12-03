@@ -69,7 +69,7 @@ public String homeLoginV3Spring(
 
     일반적으로, 세션ID가 사용자 브라우저의 URL에 노출되는 것으로 좋지 않으므로
     application.properties에 server.servlet.session.tracking-modes=cookie를
-    작성하여 세션을 유지하는 방법으로 쿠키를 이용함을 명시할 수 있
+    작성하여 세션을 유지하는 방법으로 쿠키를 이용함을 명시할 수 있음
 
 ### TimeOut
 
