@@ -92,6 +92,7 @@ sort: 7
             filterRegistrationBean.setFilter(new LogFilter());
             filterRegistrationBean.setOrder(1);
             filterRegistrationBean.addUrlPatterns("/*");
+            filterRegistrationBean.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ERROR);
             
             return filterRegistrationBean;
         }
@@ -99,8 +100,16 @@ sort: 7
     }
 
 ```
-    
+
         필터를 등록하는 여러 방법들 중 스프링 부트를 사용하는 경우에는 FilterRegistrationBean을 이용함
+
+        필터의 경우 사용자(브라우저)의 요청인지 WAS가 내부적으로 요청한 것인지 
+        구분할 수 있는 setDispatcherTypes라는 메서드를 제공함
+
+            사용자(브라우저)의 요청에 의해 로직 수행 중 컨트롤러단에서의 예외 발생 시
+            WAS에서 내부적으로 오류 페이지를 요청하는 경우와 같이 사용자(브라우저)의 요청은
+            필터를 적용시키고 WAS가 내부적으로 요청한 경우에는 필터를 적용시키고 싶지 않을 때
+            setDispatcherTypes의 매개변수로 설정할 수 있음
         
         @SpringBootApplication이 붙은 클래스에 @ServletComponentScan를 추가하고
         Filter를 구현한 클래스에 @WebFilter를 추가하여 필터를 등록하는 방법도 존재하지만
@@ -186,7 +195,7 @@ sort: 7
               registry.addInterceptor(new LogInterceptor())
                       .order(1)
                       .addPathPatterns("/**")
-                      .excludePathPatterns("/css/**", "/*.ico", "/error");
+                      .excludePathPatterns("/css/**", "/*.ico", "/error", "/error-page/**");
               
          }
         //...
@@ -197,6 +206,9 @@ sort: 7
         인터셉터 등록을 위해 WebMvcConfigurer를 구현하여야 함
 
         WebMvcConfigurer가 제공하는 addInterceptors 메서드를 이용하여 인터셉터 등록
+
+        필터와는 다르게 DispatcherType을 구분할 수 있는 메서드를 제공하지는 않으나
+        excludePathPatterns를 통해 오류페이지 경로를 설정하여 인터셉터가 적용되지 않도록 설정할 수 있음
 
 ## 참고
 
