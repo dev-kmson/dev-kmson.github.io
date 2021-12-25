@@ -121,3 +121,8 @@ public class WebConfig implements WebMvcConfigurer {
 
     이와 같이, ArgumentResolver를 활용하면 공통적으로 사용되는 로직을 어노테이션으로
     처리함으로써 개발자의 편의성을 증대할 수 있음
+
+    Filter, Interceptor를 이용하여 이미 세션 여부를 체크한 이후에 매핑된 URL을 
+    호출하는데 굳이 한번 더 매핑된 메서드에서 세션 여부를 체크하는 이유는
+    세션 여부를 체크하여 검증된 대상인지를 판단하려는 목적이 아니라 세션에 담긴
+    사용자 정보를 이용하기 위함임
