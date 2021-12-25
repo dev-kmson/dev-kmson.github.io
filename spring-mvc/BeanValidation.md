@@ -143,8 +143,10 @@ violation.message=1000에서 1000000 사이여야 합니다
     - MessageCodesResolver에 의한 메시지 키 자동 생성
 
         BindingResult의 rejectValue(), reject()에 의하여 MessageCodesResolver가 호출되어
-        메시지 키를 자동 생성한 것과 같이 Bean Validation 또한 rejectValue(), reject()를 통해
-        검증 어노테이션마다 MessageCodesResolver를 호출하여 메시지 키를 자동으로 생성함
+        메시지 키를 자동 생성한 것과 같이 Bean Validation 또한 LocalValidatorFactoryBean이
+        BindResult를 추가하면서 rejectValue(), reject()를 통해 검증 어노테이션마다 
+        MessageCodesResolver를 호출하여 메시지 키를 자동으로 생성함
+        
 
 ```text
 
