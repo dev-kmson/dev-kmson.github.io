@@ -365,8 +365,9 @@ ValidationUtils.rejectIfEmptyOrWhitespace(bindingResult, "itemName", "required")
     }
 ```
 
-        @InitBinder와 WebDataBinder를 이용하여 itemValidator에 대한 검증기를 자동으로 적용 
+        @InitBinder와 WebDataBinder를 이용하여 itemValidator에 대한 검증기를 자동으로 적용
         따라서, 어느 매핑 메서드에서든 검증기를 실행할 수 있음        
+        단, @InitBinder가 작성된 컨트롤러에 대해서만 검증기가 적용됨
 
         매핑 메서드에 @Validated는 검증기를 실행하라는 의미
         WebDataBinder에 등록한 검증기를 찾아서 실행함
