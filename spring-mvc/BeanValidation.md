@@ -280,7 +280,7 @@ violation.message=1000에서 1000000 사이여야 합니다
     
             Item 모델 객체를 ItemSaveForm, ItemUpdateForm 으로 분리
             
-                일반적으로 ...From, ...Request, ...Dto 등의 네이밍 사용
+                일반적으로 ...Form, ...Request, ...Dto 등의 네이밍 사용
 
         기존 Item 모델 객체에 존재하던 검증 어노테이션을 등록 폼과 수정 폼의 요구 사항에 맞게
         구분하여 검증 어노테이션을 적용함 
