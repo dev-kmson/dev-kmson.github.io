@@ -80,4 +80,16 @@ server.error.include-binding-errors = [opt]
 # server.error.path = /error (default)
 server.error.path = [path]
 
+# multipart form
+# multipart form 허용 여부
+# 예시) spring.servlet.multipart.enabled = false
+spring.servlet.multipart.enabled = [boolean]
+# multipart form 전송 시 파일 사이즈 제한
+# 파일 하나의 최대 사이즈
+# 예시) spring.servlet.multipart.max-file-size = 1MB
+spring.servlet.multipart.max-file-size = [size]
+# 전체 파일들의 총 사이즈
+# 예시) spring.servlet.multipart.max-request-size = 10MB
+spring.servlet.multipart.max-request-size = [size]
+
 ```
