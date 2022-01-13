@@ -119,6 +119,8 @@ public class Movie extends Item {
 
     - 서브타입 테이블들을 슈퍼타입 테이블 하나로 표현
 
+    - 서브타입 테이블들이 테이블 하나로 표현되므로 @DiscriminatorColumn 필수
+
     - 장점
 
         슈퍼타입 테이블에 서브타입 테이블 데이터들이 모두 들어가 있으므로 조인이 필요하지 않음
@@ -135,7 +137,6 @@ public class Movie extends Item {
 
     @Entity
     @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-    @DiscriminatorColumn
     public abstract class Item {
     
         @Id
@@ -151,6 +152,8 @@ public class Movie extends Item {
 
 ```
     - 슈퍼타입 테이블 없이 서브타입 테이블들을 개별적으로 표현
+
+    - 조인 전략과 단일 태이블 전략과는 다르게 개별적으로 테이블이 분리되어 있으므로 @DiscriminatorColumn 불필요
 
     - 개별 테이블 전략은 다른 전략과는 다르게 @GeneratedValue의 strategy 옵션으로 IDENTITY 사용 불가능
 
