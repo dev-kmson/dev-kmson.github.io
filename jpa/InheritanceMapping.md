@@ -26,7 +26,7 @@ sort: 4
         @Inheritance(strategy = InheritanceType.SINGLE_TABLE) : 단일 테이블 전략
         @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS) : 개별 테이블 전략
 
-    - 슈퍼 클래스를 직접 생성하여 사용할 일이 없으므로 추상 클래스로 만드는 것을 권장함
+    - 슈퍼타입 테이블만을 단독으로 저장할 일이 없다면 추상 클래스로 만드는 것을 권장함
 
 ## @ DiscriminatorColumn
 
