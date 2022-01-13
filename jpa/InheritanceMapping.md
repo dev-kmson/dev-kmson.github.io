@@ -1,10 +1,11 @@
 ---
-sort: 3
+sort: 4
 ---
 
 # InheritanceMapping
 
 ---
+
     - 상속관계 매핑
 
         객체지향언어에서는 상속 관계를 지원하나 관계형 데이터베이스에서는 상속관계를 지원하지 않음
@@ -24,6 +25,8 @@ sort: 3
         @Inheritance(strategy = InheritanceType.JOINED) : 조인 전략
         @Inheritance(strategy = InheritanceType.SINGLE_TABLE) : 단일 테이블 전략
         @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS) : 개별 테이블 전략
+
+    - 슈퍼 클래스를 직접 생성하여 사용할 일이 없으므로 추상 클래스로 만드는 것을 권장함
 
 ## @ DiscriminatorColumn
 
@@ -168,5 +171,9 @@ public class Movie extends Item {
 
 ## 전략 선택 방법
 
-    - 정규화가 잘 이루어지는 조인 전략을 기본적으로 선택하고 단순하고 확장 가능성이 없다고 판단될 경우 
-    단일 테이블 전략을 선택, 개별 테이블 전략은 사용하면 안됨
+    복잡한 구조를 가져 정규화가 잘 이루어져야 한다면 조인 전략
+    
+    단순하고 확장 가능성이 없다고 판단될 경우 단일 테이블 전략
+
+    개별 테이블 전략은 사용하지 말 것
+
