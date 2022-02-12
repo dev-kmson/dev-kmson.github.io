@@ -97,6 +97,6 @@ spring.servlet.multipart.max-request-size = [size]
 spring.data.web.pageable.default-page-size = 20
 # JPA Pageable 최대 페이지 사이즈
 # 예시) spring.data.web.pageable.max-page-size = 1000 (default)
-spring.data.web.pageable.max-page-size = 2000
+spring.data.web.pageable.max-page-size = 2000 
 
 ```
