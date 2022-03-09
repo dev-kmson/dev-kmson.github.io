@@ -10,5 +10,6 @@ devson blog
 [스프링 MVC 1편 - 백엔드 웹 개발 핵심 기술, 김영한](https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81-mvc-1/dashboard)  
 [스프링 MVC 2편 - 백엔드 웹 개발 활용 기술, 김영한](https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81-mvc-2/dashboard)  
 [자바 ORM 표준 JPA 프로그래밍 - 기본편, 김영한](https://www.inflearn.com/course/ORM-JPA-Basic/dashboard)  
-[실전! 스프링 데이터 JPA, 김영한](https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81-%EB%8D%B0%EC%9D%B4%ED%84%B0-JPA-%EC%8B%A4%EC%A0%84/dashboard)  
+[실전! 스프링 데이터 JPA, 김영한](https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81-%EB%8D%B0%EC%9D%B4%ED%84%B0-JPA-%EC%8B%A4%EC%A0%84/dashboard)
+[실전! Querydsl, 김영한](https://www.inflearn.com/course/Querydsl-%EC%8B%A4%EC%A0%84/dashboard)
 [오브젝트, 조영호](https://book.naver.com/bookdb/book_detail.nhn?bid=15007773)
